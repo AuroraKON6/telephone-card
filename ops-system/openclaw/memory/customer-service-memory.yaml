@@ -1,0 +1,25 @@
+version: "0.1"
+owner: "customer_service_agent"
+storage: "local_only"
+collections:
+  qa_patterns:
+    description: "脱敏后的高频问答与推荐追问。"
+    fields:
+      - question_pattern
+      - answer_template
+      - confidence
+      - source
+      - last_verified_at
+  unresolved_questions:
+    description: "本地客服无法确认、需要人工核实的问题。"
+    fields:
+      - question
+      - reason
+      - suggested_owner
+      - created_at
+  tone_preferences:
+    description: "被用户认可的回复风格，禁止保存个人隐私。"
+    fields:
+      - scenario
+      - tone
+      - example_without_pii

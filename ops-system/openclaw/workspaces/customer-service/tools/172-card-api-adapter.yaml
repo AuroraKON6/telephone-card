@@ -1,0 +1,88 @@
+id: "api_172_placeholder"
+name: "172 号卡官方 API 预留适配器"
+enabled: false
+status: "reserved_only"
+note: "当前只保留接口契约，不发起真实请求。拿到 user_id 和 secret 后再启用。"
+
+base_url: "${API_172_BASE_URL}"
+auth:
+  user_id: "${API_172_USER_ID}"
+  secret_env: "API_172_SECRET"
+  signature:
+    algorithm: "md5_lowercase"
+    order: "natural_parameter_order_then_append_secret"
+
+endpoints:
+  create_order:
+    method: "POST"
+    path: "/api/order/ApiToOrder"
+    content_type: "form-data"
+    required:
+      - user_id
+      - Timestamp
+      - Name
+      - Phone
+      - IDCard
+      - Province
+      - City
+      - Area
+      - Address
+      - ProductID
+      - DownOrderID
+      - ThirdPhone
+      - user_sign
+    optional_not_in_sign:
+      - NumberId
+      - NumberPoolId
+      - SkuID
+  list_products:
+    method: "POST"
+    path: "/api/order/GetProductsV2"
+    content_type: "form-data"
+    rate_limit: "not_more_than_10_per_minute; recommended only a few calls per day"
+    required:
+      - user_id
+      - Timestamp
+      - ProductID
+      - user_sign
+  pick_number:
+    method: "POST"
+    path: "/api/order/PickNumber"
+    content_type: "form-data"
+    required:
+      - user_id
+      - Timestamp
+      - prodID
+      - user_sign
+  upload_identity_images:
+    method: "POST"
+    path: "/api/order/UpPicFile"
+    content_type: "form-data"
+    image_rule: "jpg base64 only; <=2048KB; recommended <=500KB; prefix data:image/jpeg;base64,"
+  check_agent_blacklist:
+    method: "POST"
+    path: "/api/black/BlackCheckAgent"
+    content_type: "raw/json"
+  check_customer_blacklist:
+    method: "POST"
+    path: "/api/black/BlackCheckCus"
+    content_type: "raw/json"
+  order_callback:
+    method: "POST"
+    path: "${API_172_CALLBACK_PUBLIC_URL}"
+    content_type: "raw/json"
+    verify_sign: "AES decrypt with vector MengLong172HaoKa, compare OrderNo172 after integration"
+    pushed_status:
+      - "已提运营商"
+      - "已发货"
+      - "已完成"
+      - "已撤单"
+      - "已取消"
+      - "审核不通过"
+
+enable_checklist:
+  - "确认 172 后台 user_id 和 secret。"
+  - "确认回调公网域名和 HTTPS。"
+  - "使用测试订单验证签名和 DownOrderID 去重。"
+  - "对身份证、手机号、证件照做加密存储和访问审计。"
+  - "确认运营商套餐详情、禁发区、首充规则全部以接口数据为准。"

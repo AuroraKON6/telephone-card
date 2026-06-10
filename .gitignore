@@ -1,0 +1,63 @@
+# ===== Dependencies =====
+node_modules/
+.pnp
+.pnp.js
+
+# ===== Build output =====
+frontend/dist/
+frontend/.vite/
+
+# ===== Logs =====
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+ops-system/logs/
+
+# ===== Environment / Secrets =====
+.env
+.env.local
+.env.*.local
+ops-system/.env
+
+# ===== WeChat DevTools local cache =====
+frontend/wechat-miniprogram/.miniprogram_npm/
+frontend/wechat-miniprogram/miniprogram_npm/
+frontend/wechat-miniprogram/.DS_Store
+
+# ===== OS generated =====
+.DS_Store
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+
+# ===== IDE / Editor =====
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# ===== QA screenshots (local only) =====
+frontend/qa/
+frontend/codex/qa/
+qa-screenshots/
+
+# ===== Third-party code copies (not part of this project) =====
+claude-code-rev-main*/
+
+# ===== Business documents (contain internal info, not for public repo) =====
+172API.docx
+172号卡产品资料库.pdf
+ask.docx
+话术.docx
+京东抓单流程.docx
+快手抓单流程.docx
+
+# ===== Personal / chat screenshots =====
+微信图片_*.png
+
+# ===== Temporary =====
+*.tmp
+*.bak
+*.cache

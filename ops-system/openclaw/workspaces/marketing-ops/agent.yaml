@@ -1,0 +1,54 @@
+id: "marketing_ops_agent"
+name: "172 号卡营销运营 Agent"
+description: "外部高阶模型驱动的营销学习、文案生成、活动策划与审批上报 Agent。"
+model: "marketing_external"
+system_prompt_file: "./prompts/marketing-agent.md"
+
+privacy:
+  external_api_allowed: true
+  send_customer_pii_to_model: false
+  pii_masking: true
+
+memory:
+  read:
+    - "../../memory/marketing-memory.yaml"
+  write:
+    - "../../memory/marketing-memory.yaml"
+  write_policy:
+    mode: "approved_learning_only"
+    keep_source_url: true
+    keep_generated_versions: true
+
+tools:
+  public_web_research:
+    enabled: true
+    rules:
+      obey_robots_txt: true
+      only_public_pages: true
+      no_login_bypass: true
+      per_domain_hourly_limit: ${LEARNING_RATE_LIMIT_PER_DOMAIN_PER_HOUR}
+  content_draft_writer:
+    enabled: true
+  compliance_checker:
+    enabled: true
+    rules_file: "../../../knowledge/compliance-rules.md"
+  approval_inbox:
+    enabled: true
+    file: "../../../handoff/approval-inbox.md"
+
+triggers:
+  - name: "daily_competitor_learning"
+    schedule: "0 2 * * *"
+    action: "collect_public_marketing_examples"
+  - name: "weekly_campaign_plan"
+    schedule: "0 10 * * 1"
+    action: "draft_campaign_plan_for_human_approval"
+  - name: "content_request"
+    event: "operator.request.marketing_content"
+    action: "generate_draft_and_submit_for_approval"
+
+guardrails:
+  - "所有营销方案先进入审批，不自动发布。"
+  - "不得爬取需要登录、付费、绕过权限或违反 robots.txt 的内容。"
+  - "不得抄袭同行原文，只学习结构、节奏、卖点组织和合规边界。"
+  - "不得使用虚假宣传、绝对化、保号、短期注销、诱导违规私下交易等话术。"

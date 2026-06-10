@@ -1,0 +1,35 @@
+version: "0.1"
+description: "自主学习触发逻辑"
+
+customer_service_agent:
+  session_end:
+    trigger: "chat.session.closed"
+    action: "extract_safe_qa_pattern"
+    constraints:
+      - "移除手机号、身份证、详细地址、姓名。"
+      - "只沉淀通用问答和语气偏好。"
+  low_confidence:
+    trigger: "answer.confidence_below_threshold"
+    threshold: 0.68
+    action: "append_to_customer_handoff"
+  daily_refinement:
+    trigger: "cron"
+    schedule: "0 3 * * *"
+    action: "merge_duplicate_questions_and_build_qa_templates"
+
+marketing_ops_agent:
+  daily_public_learning:
+    trigger: "cron"
+    schedule: "0 2 * * *"
+    action: "crawl_public_sources_extract_patterns"
+    constraints:
+      - "遵守 robots.txt。"
+      - "不访问需要登录的私域内容。"
+      - "不复制原文。"
+  weekly_campaign:
+    trigger: "cron"
+    schedule: "0 10 * * 1"
+    action: "generate_campaign_plan_submit_approval"
+  operator_request:
+    trigger: "manual"
+    action: "generate_content_pack_submit_approval"

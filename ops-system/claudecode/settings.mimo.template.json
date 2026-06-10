@@ -1,0 +1,18 @@
+{
+  "provider": "mimo",
+  "model": "mimoV2.5pro",
+  "providers": {
+    "mimo": {
+      "type": "openai-compatible",
+      "name": "Mimo V2.5 Pro",
+      "baseURL": "https://token-plan-sgp.xiaomimimo.com/v1",
+      "apiKeyEnv": "MIMO_API_KEY",
+      "defaultModel": "mimoV2.5pro",
+      "models": ["mimoV2.5pro"]
+    }
+  },
+  "env": {
+    "CUSTOMER_MODEL_BASE_URL": "http://127.0.0.1:11434/v1",
+    "CUSTOMER_MODEL_NAME": "qwen3.5-9b-local"
+  }
+}

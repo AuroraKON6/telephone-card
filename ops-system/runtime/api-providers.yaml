@@ -1,0 +1,23 @@
+version: "0.1"
+description: "营销运营 Agent 外部 API 选择。API key 后续填写到 .env。"
+
+providers:
+  deepseek:
+    menu: "1"
+    display_name: "DeepSeek V4 Flash"
+    type: "openai-compatible"
+    base_url_env: "DEEPSEEK_BASE_URL"
+    model_env: "DEEPSEEK_MODEL"
+    api_key_env: "DEEPSEEK_API_KEY"
+    thinking_enabled_env: "DEEPSEEK_THINKING_ENABLED"
+    default_base_url: "https://api.deepseek.com"
+    default_model: "deepseek-v4-flash"
+  mimo:
+    menu: "2"
+    display_name: "Mimo V2.5 Pro"
+    type: "openai-compatible"
+    base_url_env: "MIMO_BASE_URL"
+    model_env: "MIMO_MODEL"
+    api_key_env: "MIMO_API_KEY"
+    default_base_url: "https://token-plan-sgp.xiaomimimo.com/v1"
+    default_model: "mimoV2.5pro"

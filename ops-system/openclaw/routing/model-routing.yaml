@@ -1,0 +1,45 @@
+version: "0.1"
+description: "双模型分流规则"
+
+rules:
+  customer_service:
+    agent: "customer_service_agent"
+    model: "customer_local_qwen"
+    base_url: "${CUSTOMER_MODEL_BASE_URL}"
+    external_api: false
+    network: "local_only"
+    data_policy:
+      pii_to_external_model: false
+      offline_available: true
+      memory: "local_masked"
+  marketing_ops:
+    agent: "marketing_ops_agent"
+    model: "marketing_external"
+    base_url: "${MARKETING_MODEL_BASE_URL}"
+    external_api: true
+    network: "internet_allowed"
+    data_policy:
+      pii_to_external_model: false
+      publish_without_human_approval: false
+      memory: "local_structured"
+
+external_provider_choices:
+  "1":
+    id: "deepseek"
+    model: "${DEEPSEEK_MODEL}"
+    base_url: "${DEEPSEEK_BASE_URL}"
+    api_key_env: "DEEPSEEK_API_KEY"
+    thinking_enabled: "${DEEPSEEK_THINKING_ENABLED}"
+  "2":
+    id: "mimo"
+    model: "${MIMO_MODEL}"
+    base_url: "${MIMO_BASE_URL}"
+    api_key_env: "MIMO_API_KEY"
+
+fallback:
+  customer_service_when_local_model_down:
+    action: "show_maintenance_message_and_handoff"
+    do_not_route_to_external_model: true
+  marketing_when_external_api_down:
+    action: "queue_task_until_api_available"
+    do_not_use_local_customer_model: true

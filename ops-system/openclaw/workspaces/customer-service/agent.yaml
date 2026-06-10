@@ -1,0 +1,53 @@
+id: "customer_service_agent"
+name: "电话卡娘智能客服 Agent"
+description: "本地私有化 7x24 客服接待，负责套餐咨询、规则解释、办理前信息收集和私域承接。"
+model: "customer_local_qwen"
+system_prompt_file: "./prompts/customer-service-agent.md"
+
+privacy:
+  external_api_allowed: false
+  pii_retention: "minimize"
+  pii_masking: true
+  offline_available: true
+
+memory:
+  read:
+    - "../../memory/customer-service-memory.yaml"
+  write:
+    - "../../memory/customer-service-memory.yaml"
+  write_policy:
+    mode: "curated_after_session"
+    remove_pii: true
+    store_unresolved_questions: true
+
+tools:
+  local_vector_search:
+    enabled: true
+    sources:
+      - "../../../knowledge/customer-service-kb.md"
+      - "../../../knowledge/172-product-rules.md"
+      - "../../../knowledge/compliance-rules.md"
+  api_172_placeholder:
+    enabled: false
+    config: "./tools/172-card-api-adapter.yaml"
+  handoff_queue:
+    enabled: true
+    file: "../../../handoff/customer-handoff.md"
+
+triggers:
+  - name: "incoming_user_message"
+    event: "chat.message.received"
+    action: "answer_with_local_model"
+  - name: "unknown_question"
+    event: "answer.confidence_below_threshold"
+    threshold: 0.68
+    action: "record_and_handoff"
+  - name: "daily_qa_refinement"
+    schedule: "0 3 * * *"
+    action: "summarize_unresolved_questions_without_pii"
+
+guardrails:
+  - "不得保证一定审核通过、一定发货、一定长期不变。"
+  - "不得要求用户在不安全渠道发送身份证完整号码或证件照片。"
+  - "套餐、价格、禁发区、首充、返费周期必须提示以后续 172 后台和运营商审核为准。"
+  - "无法确认的问题转人工或记录待核实，不编造。"

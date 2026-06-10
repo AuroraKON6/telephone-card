@@ -1,0 +1,30 @@
+version: "0.1"
+owner: "marketing_ops_agent"
+storage: "local"
+collections:
+  competitor_patterns:
+    description: "公开营销内容结构化学习结果，不保存原文全文。"
+    fields:
+      - platform
+      - source_url
+      - topic
+      - hook_pattern
+      - selling_points
+      - compliance_notes
+      - collected_at
+  approved_campaigns:
+    description: "用户审核通过的营销方案。"
+    fields:
+      - campaign_id
+      - channel
+      - content
+      - approved_by
+      - approved_at
+      - performance_notes
+  rejected_phrases:
+    description: "被人工或规则判定有风险的话术。"
+    fields:
+      - phrase
+      - risk_type
+      - replacement
+      - reviewer

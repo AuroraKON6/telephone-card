@@ -1,0 +1,56 @@
+/* ===== Design Tokens ===== */
+page {
+  --paper: #f6f7fb;
+  --paper-warm: #fbfaf7;
+  --ink: #151821;
+  --ink-soft: #394254;
+  --muted: #7d8798;
+  --line: rgba(32, 43, 68, 0.14);
+  --line-strong: rgba(32, 43, 68, 0.24);
+  --surface: rgba(255, 255, 255, 0.76);
+  --surface-solid: #ffffff;
+  --surface-blue: #eef4ff;
+  --blue: #1c4fb7;
+  --blue-deep: #0d275d;
+  --cyan: #0f8fa5;
+  --gold: #c9a15a;
+  --gold-soft: #f3e8cf;
+  --rose: #b95a73;
+  --green: #237c5b;
+  --warning: #a56c17;
+  --danger: #b34637;
+  --shadow-soft: 0 24rpx 80rpx rgba(23, 33, 55, 0.12);
+  --shadow-tight: 0 12rpx 30rpx rgba(23, 33, 55, 0.1);
+  --radius: 16rpx;
+  --radius-sm: 10rpx;
+
+  font-family: "PingFang SC", "Helvetica Neue", "Microsoft YaHei", sans-serif;
+  font-size: 28rpx;
+  line-height: 1.58;
+  color: var(--ink);
+  background: var(--paper);
+  -webkit-font-smoothing: antialiased;
+}
+
+/* ===== Reset ===== */
+view, text, image, form, input, button, picker {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+button {
+  border: 0;
+  font: inherit;
+  line-height: inherit;
+}
+
+button::after {
+  display: none;
+}
+
+image {
+  display: block;
+  width: 100%;
+  height: auto;
+}

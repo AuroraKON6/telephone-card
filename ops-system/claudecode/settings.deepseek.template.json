@@ -1,0 +1,19 @@
+{
+  "provider": "deepseek",
+  "model": "deepseek-v4-flash",
+  "providers": {
+    "deepseek": {
+      "type": "openai-compatible",
+      "name": "DeepSeek V4 Flash",
+      "baseURL": "https://api.deepseek.com",
+      "apiKeyEnv": "DEEPSEEK_API_KEY",
+      "defaultModel": "deepseek-v4-flash",
+      "models": ["deepseek-v4-flash"]
+    }
+  },
+  "env": {
+    "CUSTOMER_MODEL_BASE_URL": "http://127.0.0.1:11434/v1",
+    "CUSTOMER_MODEL_NAME": "qwen3.5-9b-local",
+    "DEEPSEEK_THINKING_ENABLED": "true"
+  }
+}

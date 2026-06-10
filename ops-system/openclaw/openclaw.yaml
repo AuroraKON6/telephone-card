@@ -1,0 +1,114 @@
+version: "0.1"
+project: "172-haoka-ai-ops"
+timezone: "${TIMEZONE}"
+
+runtime:
+  memory_dir: "${OPENCLAW_MEMORY_DIR}"
+  log_dir: "${OPENCLAW_LOG_DIR}"
+  default_workspace: "customer-service"
+  human_approval_required: true
+
+runtime_adapters:
+  openclaw:
+    enabled: true
+    selector_value: "1"
+    config_file: "./openclaw.yaml"
+  claudecode:
+    enabled: true
+    selector_value: "2"
+    root: "${CLAUDECODE_ROOT}"
+    settings_out: "${CLAUDECODE_SETTINGS_OUT}"
+    system_prompt: "${CLAUDECODE_SYSTEM_PROMPT}"
+
+model_registry:
+  customer_local_qwen:
+    type: "openai_compatible"
+    base_url: "${CUSTOMER_MODEL_BASE_URL}"
+    api_key: "${CUSTOMER_MODEL_API_KEY}"
+    model: "${CUSTOMER_MODEL_NAME}"
+    context_window: ${CUSTOMER_MODEL_CONTEXT}
+    network_policy: "local_only"
+  marketing_external:
+    type: "openai_compatible"
+    base_url: "${MARKETING_MODEL_BASE_URL}"
+    api_key: "${MARKETING_MODEL_API_KEY}"
+    model: "${MARKETING_MODEL_NAME}"
+    timeout_seconds: ${MARKETING_MODEL_TIMEOUT_SECONDS}
+    network_policy: "internet_allowed"
+
+external_api_profiles:
+  deepseek_v4_flash:
+    provider_id: "deepseek"
+    display_name: "DeepSeek V4 Flash"
+    type: "openai_compatible"
+    base_url: "${DEEPSEEK_BASE_URL}"
+    api_key_env: "DEEPSEEK_API_KEY"
+    model: "${DEEPSEEK_MODEL}"
+    reasoning:
+      enabled: ${DEEPSEEK_THINKING_ENABLED}
+      mode: "thinking"
+  mimo_v2_5_pro:
+    provider_id: "mimo"
+    display_name: "Mimo V2.5 Pro"
+    type: "openai_compatible"
+    base_url: "${MIMO_BASE_URL}"
+    api_key_env: "MIMO_API_KEY"
+    model: "${MIMO_MODEL}"
+
+workspaces:
+  customer-service:
+    path: "./workspaces/customer-service"
+    agent: "customer_service_agent"
+    memory: "./memory/customer-service-memory.yaml"
+    knowledge:
+      - "../knowledge/customer-service-kb.md"
+      - "../knowledge/172-product-rules.md"
+      - "../knowledge/compliance-rules.md"
+    tools:
+      - "local_vector_search"
+      - "conversation_memory"
+      - "handoff_queue"
+      - "api_172_placeholder"
+  marketing-ops:
+    path: "./workspaces/marketing-ops"
+    agent: "marketing_ops_agent"
+    memory: "./memory/marketing-memory.yaml"
+    knowledge:
+      - "../knowledge/marketing-playbook.md"
+      - "../knowledge/compliance-rules.md"
+      - "../knowledge/172-product-rules.md"
+    tools:
+      - "public_web_research"
+      - "content_draft_writer"
+      - "compliance_checker"
+      - "approval_inbox"
+
+model_routing:
+  default: "customer_local_qwen"
+  rules:
+    - when:
+        agent: "customer_service_agent"
+      use_model: "customer_local_qwen"
+      allow_external_api: false
+      reason: "所有客服对话和用户咨询全部本地推理，保护咨询数据。"
+    - when:
+        agent: "marketing_ops_agent"
+      use_model: "marketing_external"
+      allow_external_api: true
+      reason: "营销文案、竞品话术学习和推广策略使用外部高阶模型。"
+
+approval:
+  required_for:
+    - "publish_marketing_content"
+    - "change_product_claims"
+    - "enable_172_api"
+    - "send_private_domain_campaign"
+  inbox: "${APPROVAL_INBOX}"
+
+api_slots:
+  api_172:
+    enabled: ${API_172_ENABLED}
+    base_url: "${API_172_BASE_URL}"
+    user_id: "${API_172_USER_ID}"
+    secret_env: "API_172_SECRET"
+    adapter: "./workspaces/customer-service/tools/172-card-api-adapter.yaml"

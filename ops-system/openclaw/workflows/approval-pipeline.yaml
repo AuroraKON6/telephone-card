@@ -1,0 +1,43 @@
+id: "approval-pipeline"
+description: "营销方案上报、人工审核、通过后执行的状态机。"
+
+states:
+  draft:
+    description: "Agent 生成草案，尚未人工确认。"
+    next:
+      - "compliance_review"
+      - "rejected"
+  compliance_review:
+    description: "规则扫描违规词、夸大承诺、首充和禁发区遗漏。"
+    next:
+      - "human_review"
+      - "needs_change"
+  human_review:
+    description: "提交给你商议，由你决定是否发布。"
+    next:
+      - "approved"
+      - "needs_change"
+      - "rejected"
+  needs_change:
+    description: "带修改意见返回 Marketing Agent。"
+    next:
+      - "draft"
+  approved:
+    description: "可进入发布队列或交给人工发布。"
+    next:
+      - "published"
+  published:
+    description: "记录发布平台、时间和效果反馈。"
+  rejected:
+    description: "不执行，保留风险原因。"
+
+approval_record_fields:
+  - campaign_id
+  - channel
+  - target_audience
+  - draft_content
+  - compliance_check_result
+  - human_decision
+  - approved_by
+  - approved_at
+  - publish_notes

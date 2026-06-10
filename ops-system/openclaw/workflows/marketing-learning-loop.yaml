@@ -1,0 +1,59 @@
+id: "marketing-learning-loop"
+owner: "marketing_ops_agent"
+description: "公开内容学习、结构化沉淀、文案生成和审批上报闭环。"
+
+schedule:
+  daily_learning: "0 2 * * *"
+  weekly_plan: "0 10 * * 1"
+
+source_policy:
+  allowed:
+    - "公开网页"
+    - "公开平台搜索结果摘要"
+    - "用户手动提供的同行样例"
+  denied:
+    - "需要登录的私域群聊"
+    - "付费内容"
+    - "绕过 robots.txt 或访问限制的内容"
+    - "含个人隐私的用户资料"
+
+steps:
+  - id: "collect_public_examples"
+    type: "tool"
+    tool: "public_web_research"
+    query_templates:
+      - "172号卡 流量卡 推广 话术"
+      - "流量卡 小红书 种草 文案"
+      - "号卡 朋友圈 引流 文案"
+      - "流量卡 直播 话术 注意事项"
+  - id: "extract_patterns"
+    type: "llm"
+    model: "marketing_external"
+    prompt: "只提炼内容结构、卖点组织、开头方式、承接问题和风险表达，不复制原文。"
+  - id: "deduplicate"
+    type: "processor"
+    action: "semantic_dedupe"
+  - id: "write_memory"
+    type: "memory"
+    action: "append_competitor_patterns"
+    target: "../../memory/marketing-memory.yaml"
+  - id: "generate_campaign"
+    type: "llm"
+    model: "marketing_external"
+    prompt: "基于已批准的产品规则和合规边界，生成多平台推广方案草案。"
+  - id: "compliance_check"
+    type: "tool"
+    tool: "compliance_checker"
+    rules: "../../../knowledge/compliance-rules.md"
+  - id: "submit_approval"
+    type: "tool"
+    tool: "approval_inbox"
+    file: "../../../handoff/approval-inbox.md"
+    format: "yaml_block"
+
+publish_gate:
+  required_status: "approved"
+  blocked_status:
+    - "draft"
+    - "needs_change"
+    - "rejected"

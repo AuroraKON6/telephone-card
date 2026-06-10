@@ -1,0 +1,29 @@
+version: "0.1"
+description: "AI 运营系统运行时选择。业务架构不变，只切换调度/执行外壳。"
+
+runtime_options:
+  "1":
+    id: "openclaw"
+    name: "OpenClaw"
+    command: ".\\scripts\\start-openclaw.ps1"
+    config: ".\\openclaw\\openclaw.yaml"
+    role: "主运行时：任务调度、Agent 隔离、记忆存储、自主学习任务流。"
+  "2":
+    id: "claudecode"
+    name: "ClaudeCode"
+    command: ".\\scripts\\start-claudecode.ps1"
+    root_env: "CLAUDECODE_ROOT"
+    role: "替代运行时：沿用同一套知识库、审批和 API 插槽。"
+
+shared_architecture:
+  customer_agent:
+    model: "qwen3.5-9b-local"
+    execution: "local_only"
+    external_api_allowed: false
+  marketing_agent:
+    model_source: "selected_api_provider"
+    execution: "external_api"
+    external_api_allowed: true
+  api_172:
+    enabled: false
+    status: "reserved_only"
