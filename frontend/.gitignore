@@ -1,0 +1,20 @@
+# Dependencies & build output
+node_modules/
+dist/
+dist-ssr/
+*.local
+
+# Environment files with real server endpoints / secrets
+.env
+.env.local
+.env.*.local
+
+# Logs & editor caches
+logs/
+*.log
+npm-debug.log*
+.vscode/*
+!.vscode/extensions.json
+.idea/
+.DS_Store
+Thumbs.db

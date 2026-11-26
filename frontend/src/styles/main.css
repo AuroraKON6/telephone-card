@@ -1,0 +1,826 @@
+/* NovaSIM · Revolut DESIGN.md × 思源宋体（Claude Source Han Serif）全站排版系统
+ * 核心准则：
+ * 1. 纯黑 (#000000) 与纯白 (#ffffff) 全宽章节硬切换，依靠色块明度与 1px hairline 建立层级
+ * 2. 全站统一采用本地自托管思源宋体可变字体（Noto Serif SC Variable，字重 200..900，覆盖中文与拉丁/数字）
+ * 3. 开启等宽齐线数字（tnum / lnum）保证价格与 24 期滚动账单零抖动，纯代码标签保留系统等宽
+ * 4. 严禁中文继承伪斜体（font-style: normal + font-synthesis: none）
+ */
+@import "@fontsource-variable/noto-serif-sc";
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --color-primary: #494fdf;
+  --color-primary-bright: #4f55f1;
+  --color-primary-deep: #3a40c4;
+  --color-canvas-dark: #000000;
+  --color-canvas-light: #ffffff;
+  --color-surface-soft: #f4f4f4;
+  --color-surface-deep: #0a0a0a;
+  --color-surface-elevated: #16181a;
+  --color-ink: #191c1f;
+  --color-body: #1f2226;
+  --color-hairline-light: #e2e2e7;
+  --color-hairline-dark: rgba(255, 255, 255, 0.12);
+
+  /* 全站统一思源宋体字体栈（参考 kai-wei-kfuse/claude-siyuan-font） */
+  --font-serif: "Noto Serif SC Variable", "Noto Serif SC", "Source Han Serif SC", "思源宋体", "Songti SC", "STSong", "SimSun", serif;
+  --font-display-en: var(--font-serif);
+  --font-display-cn: var(--font-serif);
+  --font-display: var(--font-serif);
+  --font-body: var(--font-serif);
+  --font-mono: var(--font-serif);
+  --font-code: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+
+  /* OpenType 特性栈：等宽齐线衬线数字（防止价格与账单跳动） */
+  --font-features-body: "kern" 1;
+  --font-features-num: "tnum" 1, "lnum" 1;
+  --font-features-mono: "tnum" 1, "lnum" 1;
+
+  /* 巨型价格/指标数字专用性格旋钮（思源宋体 700 粗衬线） */
+  --hero-num-font: var(--font-serif);
+  --hero-num-weight: 700;
+  --hero-num-track: -0.025em;
+
+  font-synthesis: none;
+  line-break: strict;
+}
+
+@layer base {
+  html {
+    scroll-behavior: smooth;
+    overflow-x: clip;
+    background-color: #000000;
+    font-family: var(--font-serif);
+  }
+
+  body {
+    @apply font-sans text-[16px] font-normal leading-[1.62];
+    letter-spacing: 0.015em;
+    font-feature-settings: var(--font-features-body);
+    overflow-x: clip;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    text-rendering: optimizeLegibility;
+  }
+
+  p {
+    text-wrap: pretty;
+  }
+
+  h1,
+  h2,
+  h3,
+  h4 {
+    @apply font-display font-bold;
+    font-style: normal;
+    text-wrap: balance;
+  }
+
+  pre,
+  code,
+  kbd {
+    font-family: var(--font-code);
+  }
+
+  .font-mono {
+    font-family: var(--font-serif);
+    font-variant-numeric: tabular-nums lining-nums;
+    font-feature-settings: var(--font-features-mono);
+  }
+
+  :focus-visible {
+    outline: 2px solid #494fdf;
+    outline-offset: 2px;
+  }
+}
+
+/* 展示级标题规范（思源宋体 700 粗衬线 + 优雅呼吸行距 + 克制负字距） */
+.type-display-xxl {
+  @apply font-display font-bold;
+  font-size: clamp(3rem, 6.8vw, 6.5rem);
+  line-height: 1.08;
+  letter-spacing: -0.02em;
+}
+
+.type-display-xl {
+  @apply font-display font-bold;
+  font-size: clamp(2.25rem, 4.6vw, 4.75rem);
+  line-height: 1.12;
+  letter-spacing: -0.015em;
+}
+
+.type-display-lg {
+  @apply font-display font-bold;
+  font-size: clamp(1.875rem, 3.1vw, 2.9rem);
+  line-height: 1.22;
+  letter-spacing: -0.01em;
+}
+
+.type-display-md {
+  @apply font-display font-bold;
+  font-size: clamp(1.5rem, 2.4vw, 2.4rem);
+  line-height: 1.25;
+  letter-spacing: -0.01em;
+}
+
+.type-heading-lg {
+  @apply font-display font-bold;
+  font-size: 32px;
+  line-height: 1.24;
+  letter-spacing: -0.01em;
+}
+
+.type-heading-md {
+  @apply font-display font-semibold;
+  font-size: 24px;
+  line-height: 1.35;
+  letter-spacing: 0;
+}
+
+.type-heading-sm {
+  @apply font-display font-semibold;
+  font-size: 20px;
+  line-height: 1.42;
+  letter-spacing: 0;
+}
+
+/* 等宽齐线数字（资费、流量、折合单价绝不左右抖动） */
+.tabular {
+  font-variant-numeric: tabular-nums lining-nums;
+  font-feature-settings: var(--font-features-num);
+}
+
+/* 巨型价格 / 核心指标数字原语（思源宋体 700 + 齐线等宽数字） */
+.hero-num {
+  font-family: var(--hero-num-font);
+  font-weight: var(--hero-num-weight);
+  letter-spacing: var(--hero-num-track);
+  line-height: 0.96;
+  font-variant-numeric: tabular-nums lining-nums;
+  font-feature-settings: var(--font-features-num);
+}
+
+/* 章节顶标 Kicker（思源宋体疏朗宽字距大写微标） */
+.ns-kicker {
+  font-family: var(--font-serif);
+  font-size: 12.5px;
+  font-weight: 600;
+  line-height: 1.4;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  font-variant-numeric: tabular-nums lining-nums;
+  font-feature-settings: var(--font-features-mono);
+}
+
+/* 精密数据元信息（单 GB 成本、序列码、卡面编码 —— 统一思源宋体齐线数字） */
+.ns-data-mono {
+  font-family: var(--font-serif);
+  font-variant-numeric: tabular-nums lining-nums;
+  font-feature-settings: var(--font-features-mono);
+}
+
+/* Revolut 标准按钮族（全圆角 rounded-full，48px 标准触控高度 + 细腻微缩放物理触感） */
+@layer components {
+  .btn-primary {
+    @apply inline-flex min-h-[48px] items-center justify-center gap-2 rounded-full bg-canvas-light px-7 py-3.5 text-[16px] font-semibold leading-[1.5] text-canvas-dark transition-[background-color,transform] duration-150;
+    letter-spacing: 0.24px;
+    transition-timing-function: cubic-bezier(0.22, 1, 0.36, 1);
+  }
+  .btn-primary:hover {
+    @apply bg-[#ececef];
+  }
+  .btn-primary:active {
+    @apply bg-faint scale-[0.97];
+  }
+
+  .btn-dark {
+    @apply inline-flex min-h-[48px] items-center justify-center gap-2 rounded-full bg-canvas-dark px-7 py-3.5 text-[16px] font-semibold leading-[1.5] text-on-dark transition-[background-color,transform] duration-150;
+    letter-spacing: 0.24px;
+    transition-timing-function: cubic-bezier(0.22, 1, 0.36, 1);
+  }
+  .btn-dark:hover {
+    @apply bg-[#26292e];
+  }
+  .btn-dark:active {
+    @apply bg-charcoal scale-[0.97];
+  }
+
+  .btn-soft {
+    @apply inline-flex min-h-[48px] items-center justify-center gap-2 rounded-full bg-surface-soft px-7 py-3.5 text-[16px] font-semibold leading-[1.5] text-ink transition-[background-color,transform] duration-150;
+    letter-spacing: 0.24px;
+    transition-timing-function: cubic-bezier(0.22, 1, 0.36, 1);
+  }
+  .btn-soft:hover {
+    @apply bg-[#e8e8ec];
+  }
+  .btn-soft:active {
+    @apply scale-[0.97];
+  }
+
+  .btn-outline-light {
+    @apply inline-flex min-h-[48px] items-center justify-center gap-2 rounded-full border border-hairline-strong bg-canvas-light px-[27px] py-[13px] text-[16px] font-semibold leading-[1.5] text-ink transition-[background-color,transform] duration-150;
+    letter-spacing: 0.24px;
+    transition-timing-function: cubic-bezier(0.22, 1, 0.36, 1);
+  }
+  .btn-outline-light:hover {
+    @apply bg-surface-soft;
+  }
+  .btn-outline-light:active {
+    @apply scale-[0.97];
+  }
+
+  .btn-outline-dark {
+    @apply inline-flex min-h-[48px] items-center justify-center gap-2 rounded-full border border-on-dark bg-canvas-dark px-[27px] py-[13px] text-[16px] font-semibold leading-[1.5] text-on-dark transition-[background-color,transform] duration-150;
+    letter-spacing: 0.24px;
+    transition-timing-function: cubic-bezier(0.22, 1, 0.36, 1);
+  }
+  .btn-outline-dark:hover {
+    @apply bg-surface-elevated;
+  }
+  .btn-outline-dark:active {
+    @apply scale-[0.97];
+  }
+
+  .btn-pill-sm {
+    @apply inline-flex min-h-[44px] sm:min-h-[36px] items-center justify-center gap-1.5 rounded-full bg-surface-soft px-4 py-2 text-[14px] font-semibold leading-[1.43] text-ink transition-[background-color,color,border-color,transform] duration-150 whitespace-nowrap active:scale-[0.97];
+  }
+  .btn-pill-sm:hover {
+    @apply bg-[#e6e6eb];
+  }
+  .btn-pill-sm-active {
+    @apply inline-flex min-h-[44px] sm:min-h-[36px] items-center justify-center gap-1.5 rounded-full bg-canvas-dark px-4 py-2 text-[14px] font-semibold leading-[1.43] text-on-dark transition-[background-color,color,transform] duration-150 whitespace-nowrap active:scale-[0.97];
+  }
+
+  .sub-nav-pill {
+    @apply inline-flex min-h-[44px] sm:min-h-[38px] items-center justify-center gap-1.5 rounded-full bg-surface-elevated px-4 py-2 text-[14px] font-semibold leading-[1.43] text-on-dark-mute transition-[background-color,color,transform] duration-150 whitespace-nowrap active:scale-[0.97];
+  }
+  .sub-nav-pill:hover {
+    @apply text-on-dark bg-[#222529];
+  }
+  .sub-nav-pill-active {
+    @apply inline-flex min-h-[44px] sm:min-h-[38px] items-center justify-center gap-1.5 rounded-full bg-canvas-light px-4 py-2 text-[14px] font-semibold leading-[1.43] text-canvas-dark transition-[background-color,color,transform] duration-150 whitespace-nowrap active:scale-[0.97];
+  }
+
+  /* 金融级 56px 输入框 */
+  .revolut-input {
+    @apply h-[56px] w-full rounded-md border border-hairline-light bg-canvas-light px-4 text-[16px] font-normal text-ink placeholder:text-stone transition-colors duration-150;
+    letter-spacing: 0.24px;
+  }
+  .revolut-input:focus {
+    @apply border-primary outline-none;
+  }
+}
+
+/* ====== Revolut Fintech-Grade Motion System ====== */
+
+/* 1. 首屏电影感错峰入场（纯 GPU 合成） */
+@keyframes heroRise {
+  from {
+    opacity: 0;
+    transform: translate3d(0, 22px, 0);
+  }
+  to {
+    opacity: 1;
+    transform: translate3d(0, 0, 0);
+  }
+}
+
+.hero-stagger {
+  opacity: 0;
+  animation: heroRise 720ms cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  animation-delay: var(--stagger-delay, 0ms);
+}
+
+/* 2. 滚动触发视口渐显（配合 v-reveal） */
+.reveal-item {
+  opacity: 0;
+  transform: translate3d(0, 26px, 0);
+  transition:
+    opacity 680ms cubic-bezier(0.16, 1, 0.3, 1) var(--reveal-delay, 0ms),
+    transform 680ms cubic-bezier(0.16, 1, 0.3, 1) var(--reveal-delay, 0ms);
+  will-change: opacity, transform;
+}
+.reveal-item.is-visible {
+  opacity: 1;
+  transform: translate3d(0, 0, 0);
+  will-change: auto;
+}
+
+/* 3. 实体 SIM 卡翻换过渡 */
+.card-swap-enter-active,
+.card-swap-leave-active {
+  transition:
+    opacity 240ms cubic-bezier(0.22, 1, 0.36, 1),
+    transform 280ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+.card-swap-enter-from {
+  opacity: 0;
+  transform: translate3d(0, 10px, 0) scale(0.975);
+}
+.card-swap-leave-to {
+  opacity: 0;
+  transform: translate3d(0, -8px, 0) scale(0.98);
+}
+
+/* 4. 目录筛选卡片丝滑重排（TransitionGroup） */
+.catalog-grid-move {
+  transition: transform 380ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+.catalog-grid-enter-active {
+  transition:
+    opacity 320ms cubic-bezier(0.22, 1, 0.36, 1),
+    transform 340ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+.catalog-grid-leave-active {
+  transition:
+    opacity 200ms ease-in,
+    transform 200ms ease-in;
+}
+.catalog-grid-enter-from,
+.catalog-grid-leave-to {
+  opacity: 0;
+  transform: translate3d(0, 12px, 0) scale(0.98);
+}
+
+/* 5. 模态窗与侧滑抽屉过渡 */
+.modal-fade-enter-active,
+.modal-fade-leave-active {
+  transition: opacity 220ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+.modal-fade-enter-from,
+.modal-fade-leave-to {
+  opacity: 0;
+}
+.modal-fade-enter-active .modal-panel,
+.modal-fade-leave-active .modal-panel {
+  transition: transform 280ms cubic-bezier(0.16, 1, 0.3, 1), opacity 220ms ease-out;
+}
+.modal-fade-enter-from .modal-panel {
+  opacity: 0;
+  transform: translate3d(0, 20px, 0) scale(0.97);
+}
+.modal-fade-leave-to .modal-panel {
+  opacity: 0;
+  transform: translate3d(0, 12px, 0) scale(0.98);
+}
+
+.drawer-slide-enter-active,
+.drawer-slide-leave-active {
+  transition: opacity 240ms ease;
+}
+.drawer-slide-enter-from,
+.drawer-slide-leave-to {
+  opacity: 0;
+}
+.drawer-slide-enter-active .drawer-panel,
+.drawer-slide-leave-active .drawer-panel {
+  transition: transform 320ms cubic-bezier(0.16, 1, 0.3, 1);
+}
+.drawer-slide-enter-from .drawer-panel,
+.drawer-slide-leave-to .drawer-panel {
+  transform: translate3d(100%, 0, 0);
+}
+
+/* 6. 下拉弹出层过渡 */
+.dropdown-pop-enter-active,
+.dropdown-pop-leave-active {
+  transition:
+    opacity 160ms cubic-bezier(0.22, 1, 0.36, 1),
+    transform 180ms cubic-bezier(0.22, 1, 0.36, 1);
+  transform-origin: top center;
+}
+.dropdown-pop-enter-from,
+.dropdown-pop-leave-to {
+  opacity: 0;
+  transform: translate3d(0, -6px, 0) scale(0.98);
+}
+
+/* 7. FAQ 手风琴丝滑展开 */
+.accordion-content {
+  display: grid;
+  grid-template-rows: 0fr;
+  transition: grid-template-rows 280ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+.accordion-content.is-open {
+  grid-template-rows: 1fr;
+}
+.accordion-inner {
+  overflow: hidden;
+}
+
+/* 8. 24 期柱状图波浪升起关键帧 */
+@keyframes barRise {
+  from {
+    transform: scaleY(0.05);
+    opacity: 0.2;
+  }
+  to {
+    transform: scaleY(1);
+    opacity: 1;
+  }
+}
+.chart-bar-rise {
+  transform-origin: bottom center;
+  animation: barRise 480ms cubic-bezier(0.16, 1, 0.3, 1) both;
+  animation-delay: var(--bar-delay, 0ms);
+}
+
+/* 9. 极简在线信号脉冲点（低频克制） */
+@keyframes signalPulse {
+  0%, 100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.45;
+    transform: scale(0.82);
+  }
+}
+.signal-dot {
+  animation: signalPulse 2.4s ease-in-out infinite;
+}
+
+/* 10. 卡片微抬升（纯位移，严守 Revolut 零 drop-shadow 规范） */
+.card-lift {
+  transition:
+    transform 240ms cubic-bezier(0.22, 1, 0.36, 1),
+    border-color 180ms ease,
+    background-color 180ms ease;
+}
+.card-lift:hover {
+  transform: translate3d(0, -4px, 0);
+}
+
+/* ====== 高阶流光、全息、聚光灯与星轨特效（融合 46e1fb7f 榜单范式） ====== */
+
+/* 11. CSS @property 巡航流光边框（BorderBeam） */
+@property --beam-angle {
+  syntax: "<angle>";
+  initial-value: 0deg;
+  inherits: false;
+}
+
+@keyframes borderBeamSpin {
+  from {
+    --beam-angle: 0deg;
+  }
+  to {
+    --beam-angle: 360deg;
+  }
+}
+
+.border-beam-ring {
+  padding: var(--beam-width, 1.5px);
+  background: conic-gradient(
+    from var(--beam-angle),
+    transparent 0deg,
+    transparent 268deg,
+    var(--beam-from, #6d73ff) 316deg,
+    var(--beam-to, #00c495) 344deg,
+    #ffffff 356deg,
+    transparent 360deg
+  );
+  -webkit-mask:
+    linear-gradient(#fff 0 0) content-box,
+    linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+  mask:
+    linear-gradient(#fff 0 0) content-box,
+    linear-gradient(#fff 0 0);
+  mask-composite: exclude;
+  animation: borderBeamSpin var(--beam-duration, 5.5s) linear infinite;
+}
+
+/* 12. Hero 极光流动光幕（Aura / ShaderGradient 风格） */
+@keyframes auroraDrift1 {
+  0%, 100% {
+    transform: translate3d(0, 0, 0) scale(1);
+  }
+  50% {
+    transform: translate3d(48px, 28px, 0) scale(1.1);
+  }
+}
+@keyframes auroraDrift2 {
+  0%, 100% {
+    transform: translate3d(0, 0, 0) scale(1);
+  }
+  50% {
+    transform: translate3d(-44px, -24px, 0) scale(1.08);
+  }
+}
+
+.aurora-blob {
+  position: absolute;
+  border-radius: 9999px;
+  filter: blur(92px);
+  will-change: transform;
+}
+.aurora-blob-1 {
+  top: -18%;
+  left: -8%;
+  width: 560px;
+  height: 440px;
+  background: radial-gradient(circle, rgba(73, 79, 223, 0.34) 0%, rgba(73, 79, 223, 0) 70%);
+  animation: auroraDrift1 14s ease-in-out infinite;
+}
+.aurora-blob-2 {
+  top: 6%;
+  right: -6%;
+  width: 520px;
+  height: 480px;
+  background: radial-gradient(circle, rgba(0, 168, 126, 0.22) 0%, rgba(73, 79, 223, 0.16) 45%, rgba(0, 0, 0, 0) 72%);
+  animation: auroraDrift2 16s ease-in-out infinite;
+}
+.aurora-blob-3 {
+  bottom: -14%;
+  left: 34%;
+  width: 460px;
+  height: 320px;
+  background: radial-gradient(circle, rgba(124, 131, 255, 0.16) 0%, rgba(0, 0, 0, 0) 72%);
+  animation: auroraDrift1 18s ease-in-out infinite reverse;
+}
+
+/* 13. 渐隐点阵坐标背景（Pattern Craft 风格） */
+.dot-matrix-dark {
+  background-image: radial-gradient(rgba(255, 255, 255, 0.15) 1px, transparent 1px);
+  background-size: 28px 28px;
+  -webkit-mask-image: radial-gradient(ellipse 75% 70% at 55% 42%, #000 18%, transparent 82%);
+  mask-image: radial-gradient(ellipse 75% 70% at 55% 42%, #000 18%, transparent 82%);
+}
+
+/* 14. 金属流光扫字（Hero 核心关键词） */
+@keyframes textShimmerFlow {
+  0% {
+    background-position: 0% 50%;
+  }
+  100% {
+    background-position: 200% 50%;
+  }
+}
+.shimmer-headline {
+  background: linear-gradient(
+    110deg,
+    #ffffff 0%,
+    #ffffff 36%,
+    #a8adff 48%,
+    #6ef3d1 54%,
+    #ffffff 66%,
+    #ffffff 100%
+  );
+  background-size: 220% 100%;
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  animation: textShimmerFlow 6.5s linear infinite;
+}
+
+/* 15. 按钮高光扫掠（借鉴 magicui ShimmerButton，悬停单次扫过克制不抢戏） */
+.btn-shine {
+  position: relative;
+  overflow: hidden;
+}
+.btn-shine::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  transform: translateX(-115%) skewX(-18deg);
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    rgba(255, 255, 255, 0.28) 50%,
+    transparent 100%
+  );
+  transition: transform 620ms cubic-bezier(0.22, 1, 0.36, 1);
+  pointer-events: none;
+}
+.btn-shine:hover::after {
+  transform: translateX(115%) skewX(-18deg);
+}
+
+/* 16. 聚光灯卡片变量驱动（SpotlightCard） */
+.spotlight-dark {
+  position: relative;
+  overflow: hidden;
+}
+.spotlight-dark::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  pointer-events: none;
+  opacity: var(--spot-opacity, 0);
+  transition: opacity 260ms ease;
+  background: radial-gradient(
+    340px circle at var(--spot-x, 50%) var(--spot-y, 50%),
+    rgba(116, 124, 255, 0.16),
+    rgba(0, 196, 149, 0.06) 42%,
+    transparent 74%
+  );
+}
+
+.spotlight-light {
+  position: relative;
+  overflow: hidden;
+}
+.spotlight-light::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  pointer-events: none;
+  opacity: var(--spot-opacity, 0);
+  transition: opacity 240ms ease;
+  background: radial-gradient(
+    300px circle at var(--spot-x, 50%) var(--spot-y, 50%),
+    rgba(73, 79, 223, 0.07),
+    transparent 70%
+  );
+}
+
+/* 17. Thinking Orb 旋转星轨 */
+@keyframes orbSpinCW {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+@keyframes orbSpinCCW {
+  from {
+    transform: rotate(360deg);
+  }
+  to {
+    transform: rotate(0deg);
+  }
+}
+.orb-ring-outer {
+  transform-origin: 16px 16px;
+  animation: orbSpinCW 9s linear infinite;
+}
+.orb-ring-inner {
+  transform-origin: 16px 16px;
+  animation: orbSpinCCW 6s linear infinite;
+}
+.orb-ring-outer.orb-fast {
+  animation-duration: 1.8s;
+}
+.orb-ring-inner.orb-fast {
+  animation-duration: 1.2s;
+}
+
+/* 18. 全息金属拉丝微纹理 */
+.brushed-metal-overlay {
+  background-image: repeating-linear-gradient(
+    115deg,
+    rgba(255, 255, 255, 0.03) 0px,
+    rgba(255, 255, 255, 0.03) 1px,
+    transparent 1px,
+    transparent 4px
+  );
+}
+
+/*
+ * From Uiverse.io by javierBarroso - https://uiverse.io/javierBarroso/yellow-panda-85
+ * MIT License, Copyright (c) adamgiebl (Adam Giebl), javierBarroso (Javier Barroso)
+ *
+ * 全站卡片统一半透明雕塑磨砂玻璃背景（亮底 / 暗幕 / 钴紫主推三态自适应）：
+ * 完整保留原版冷珍珠灰基底 rgb(223, 225, 235)、20px 圆角、顶部柔暗内影与底部高光内辉
+ * （inset 0px ±56px 40px）及 1px 立体倒角光边，并叠加 backdrop-filter 毛玻璃通透感。
+ */
+.ns-frosted-card-light {
+  background: rgba(223, 225, 235, 0.56);
+  backdrop-filter: blur(14px) saturate(135%);
+  -webkit-backdrop-filter: blur(14px) saturate(135%);
+  border-radius: 20px;
+  border: 1px solid rgba(255, 255, 255, 0.85);
+  box-shadow:
+    inset 0px 56px 40px rgba(34, 34, 34, 0.14),
+    inset 0px -56px 40px rgba(255, 255, 255, 0.92),
+    1px 1px 2px rgba(255, 255, 255, 0.95),
+    -1px -1px 2px rgba(68, 68, 68, 0.14);
+}
+
+.ns-frosted-card-light:hover {
+  background: rgba(223, 225, 235, 0.66);
+  box-shadow:
+    inset 0px 56px 40px rgba(34, 34, 34, 0.18),
+    inset 0px -56px 40px rgba(255, 255, 255, 0.96),
+    1px 1px 2px rgba(255, 255, 255, 1),
+    -1px -1px 2px rgba(68, 68, 68, 0.18);
+}
+
+.ns-frosted-card-dark {
+  background: rgba(223, 225, 235, 0.085);
+  backdrop-filter: blur(14px) saturate(140%);
+  -webkit-backdrop-filter: blur(14px) saturate(140%);
+  border-radius: 20px;
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  box-shadow:
+    inset 0px 56px 40px rgba(0, 0, 0, 0.44),
+    inset 0px -56px 40px rgba(223, 225, 235, 0.12),
+    1px 1px 2px rgba(255, 255, 255, 0.2),
+    -1px -1px 2px rgba(0, 0, 0, 0.48);
+}
+
+.ns-frosted-card-featured {
+  background: rgba(73, 79, 223, 0.72);
+  backdrop-filter: blur(14px) saturate(150%);
+  -webkit-backdrop-filter: blur(14px) saturate(150%);
+  border-radius: 20px;
+  border: 1px solid rgba(255, 255, 255, 0.36);
+  box-shadow:
+    inset 0px 56px 40px rgba(18, 22, 82, 0.34),
+    inset 0px -56px 40px rgba(223, 225, 235, 0.24),
+    1px 1px 2px rgba(255, 255, 255, 0.45),
+    -1px -1px 2px rgba(16, 18, 68, 0.4);
+}
+
+/*
+ * From Uiverse.io by Tiagoadag - https://uiverse.io/Tiagoadag/cuddly-catfish-6
+ * MIT License, Copyright (c) Tiagoadag
+ *
+ * 冲突消解适配：
+ * - 通过 mask-composite: exclude 将 #00ff75 -> #3700ff 渐变外框转为中空光框，与半透明磨砂玻璃完美共存；
+ * - 悬停时外框点亮 30px 翠绿辉光（rgba(0, 255, 117, 0.30)），内卡同步 scale(0.98) 缩进显露霓虹边框。
+ */
+.ns-tiago-shell {
+  position: relative;
+  border-radius: 20px;
+  transition: box-shadow 0.3s ease;
+}
+
+.ns-tiago-shell::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: 20px;
+  padding: 2px;
+  background-image: linear-gradient(163deg, #00ff75 0%, #3700ff 100%);
+  -webkit-mask:
+    linear-gradient(#ffffff 0 0) content-box,
+    linear-gradient(#ffffff 0 0);
+  -webkit-mask-composite: xor;
+  mask:
+    linear-gradient(#ffffff 0 0) content-box,
+    linear-gradient(#ffffff 0 0);
+  mask-composite: exclude;
+  opacity: 0.22;
+  pointer-events: none;
+  z-index: 20;
+  transition:
+    opacity 0.3s ease,
+    padding 0.25s ease;
+}
+
+.ns-tiago-shell:hover {
+  box-shadow: 0px 0px 30px 1px rgba(0, 255, 117, 0.3);
+}
+
+.ns-tiago-shell:hover::before {
+  opacity: 1;
+  padding: 3.5px;
+}
+
+.ns-tiago-inner {
+  width: 100%;
+  height: 100%;
+  border-radius: 20px;
+  transition:
+    transform 0.2s ease,
+    border-radius 0.2s ease,
+    background-color 0.25s ease;
+}
+
+.ns-tiago-shell:hover > .ns-tiago-inner {
+  transform: scale(0.98);
+  border-radius: 20px;
+}
+
+/* 水平滚动轨道隐藏原生粗糙滚动条 */
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+.no-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .hero-stagger,
+  .reveal-item {
+    opacity: 1 !important;
+    transform: none !important;
+  }
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
