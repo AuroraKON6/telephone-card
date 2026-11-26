@@ -142,6 +142,7 @@ const activeApplyPlanId = ref<string | null>(null);
 const soldOutPlanId = ref<string | null>(null);
 const activeGuideId = ref<string | null>(null);
 const isAdvisorOpen = ref(false);
+const isContactOpen = ref(false);
 const slowNetworkState = ref<{
   active: boolean;
   title: string;
@@ -859,6 +860,14 @@ export function useStorefront() {
     isAdvisorOpen.value = false;
   }
 
+  function openContact() {
+    isContactOpen.value = true;
+  }
+
+  function closeContact() {
+    isContactOpen.value = false;
+  }
+
   /** 真实服务器节点延迟检测（实际请求 GET /health/ready） */
   async function triggerSlowNetworkCheck() {
     if (slowNetworkTimer) clearTimeout(slowNetworkTimer);
@@ -1039,6 +1048,7 @@ export function useStorefront() {
     soldOutPlan,
     activeGuideId,
     isAdvisorOpen,
+    isContactOpen,
     slowNetworkState,
     advisorMessages,
     toastMessage,
@@ -1064,6 +1074,8 @@ export function useStorefront() {
     closeGuide,
     openAdvisor,
     closeAdvisor,
+    openContact,
+    closeContact,
     triggerSlowNetworkCheck,
     dismissSlowNetwork,
     sendAdvisorPrompt,

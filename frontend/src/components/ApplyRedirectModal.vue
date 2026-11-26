@@ -232,14 +232,14 @@ function handleReceiptCopied() {
     <Transition name="modal-fade">
       <div
         v-if="activeApplyPlan"
-        class="fixed inset-0 z-50 flex items-center justify-center bg-black/75 p-3 sm:p-5"
+        class="fixed inset-0 z-50 flex items-end justify-center bg-black/75 p-0 sm:items-center sm:p-5"
         role="dialog"
         aria-modal="true"
         aria-label="前往官方授权页办理确认"
         @click.self="closeApply"
       >
         <div
-          class="modal-panel flex max-h-[92dvh] w-full flex-col overflow-hidden rounded-xl bg-canvas-light text-ink transition-[max-width] duration-300"
+          class="modal-panel flex max-h-[92dvh] w-full flex-col overflow-hidden rounded-t-2xl bg-canvas-light text-ink transition-[max-width] duration-300 sm:rounded-xl"
           :class="completed ? 'max-w-lg' : 'max-w-5xl'"
         >
           <!-- 顶部精简导航条 -->

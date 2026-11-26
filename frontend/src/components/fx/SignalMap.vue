@@ -636,11 +636,11 @@ onUnmounted(() => {
   >
     <canvas ref="canvasRef" class="block h-full w-full" />
 
-    <!-- 城市节点悬浮铭牌（悬停或选中枢纽城市时浮现） -->
+    <!-- 城市节点悬浮铭牌（仅平板/桌面浮于地图内；手机端已移至地图下方独立信息条，彻底避免挡住地图） -->
     <Transition name="dropdown-pop">
       <div
         v-if="activeCity"
-        class="pointer-events-none absolute z-20 w-60 rounded-md border border-hairline-dark bg-black/85 p-3.5 text-left backdrop-blur-md"
+        class="pointer-events-none absolute z-20 hidden w-60 rounded-md border border-hairline-dark bg-black/85 p-3.5 text-left backdrop-blur-md sm:block"
         :style="
           tooltipPos
             ? {

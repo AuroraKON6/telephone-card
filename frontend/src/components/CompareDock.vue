@@ -22,7 +22,7 @@ function scrollToCompare() {
   >
     <div
       v-if="comparePlans.length > 0"
-      class="fixed bottom-4 left-1/2 z-30 w-[calc(100%-24px)] max-w-3xl -translate-x-1/2 rounded-full border border-hairline-dark bg-canvas-dark px-3 py-2.5 text-on-dark sm:bottom-6 sm:px-5"
+      class="fixed bottom-4 left-1/2 z-30 hidden w-[calc(100%-24px)] max-w-3xl -translate-x-1/2 rounded-full border border-hairline-dark bg-canvas-dark px-3 py-2.5 text-on-dark sm:bottom-6 sm:px-5 md:block"
       role="region"
       aria-label="已选对比号卡"
     >

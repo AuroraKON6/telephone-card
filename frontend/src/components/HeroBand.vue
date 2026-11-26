@@ -36,7 +36,7 @@ const minPricePerGb = computed(() => {
 <template>
   <section
     id="top"
-    class="relative w-full overflow-hidden bg-canvas-dark pb-20 pt-32 text-on-dark sm:pb-24 sm:pt-36 lg:pb-band lg:pt-40"
+    class="relative w-full overflow-hidden bg-canvas-dark pb-12 pt-[72px] text-on-dark sm:pb-24 sm:pt-36 lg:pb-band lg:pt-40"
   >
     <!-- React Bits <MicroSlats /> WebGL2 流体微栅海浪底衬（随全局流光开关联动） -->
     <div
@@ -76,14 +76,14 @@ const minPricePerGb = computed(() => {
     </div>
 
     <div class="relative z-10 mx-auto max-w-container px-4 sm:px-6">
-      <div class="grid grid-cols-1 items-center gap-12 lg:grid-cols-12 lg:gap-10">
-        <!-- 左侧叙事区（错峰电影感入场） -->
+      <div class="grid grid-cols-1 items-center gap-7 lg:grid-cols-12 lg:gap-10">
+        <!-- 左侧叙事区（错峰电影感入场，手机端紧凑排布让首屏同步呈现 3D SIM 卡） -->
         <div class="lg:col-span-7">
           <div
-            class="hero-stagger inline-flex items-center gap-2 rounded-full border border-hairline-dark bg-surface-elevated/90 px-4 py-1.5 text-[13px] font-semibold text-on-dark-mute"
+            class="hero-stagger inline-flex items-center gap-2 rounded-full border border-hairline-dark bg-surface-elevated/90 px-3 py-1 text-[11.5px] font-semibold text-on-dark-mute sm:px-4 sm:py-1.5 sm:text-[13px]"
             style="--stagger-delay: 0ms"
           >
-            <span class="signal-dot h-2 w-2 rounded-full bg-accent-teal" aria-hidden="true" />
+            <span class="signal-dot h-1.5 w-1.5 rounded-full bg-accent-teal sm:h-2 sm:w-2" aria-hidden="true" />
             <span>四大运营商正规直发 · 24 个月账单透明核验</span>
           </div>
 
@@ -98,70 +98,71 @@ const minPricePerGb = computed(() => {
               { text: '流量自由，' },
               { text: '资费零套路。', shimmer: true },
             ]"
-            class="type-display-xxl mt-6 text-on-dark"
+            class="type-display-xxl mt-4 text-on-dark sm:mt-6"
           />
 
           <p
-            class="hero-stagger mt-6 max-w-xl text-[17px] font-normal leading-[1.62] tracking-[0.005em] text-on-dark-mute sm:text-[18px]"
+            class="hero-stagger mt-3.5 max-w-xl text-[13.5px] font-normal leading-[1.56] tracking-[0.005em] text-on-dark-mute sm:mt-6 sm:text-[18px] sm:leading-[1.62]"
             style="--stagger-delay: 160ms"
           >
             Skip the "¥1 first-month" fine print. Every plan lays out transparent 24-month billing from activation to renewal, verifies regional shipping availability in real time, and stores zero personal ID data.
           </p>
 
-          <!-- Revolut 标志性主次胶囊按钮组合（高光扫掠 + 点阵思考光球） -->
+          <!-- 手机端双列并排胶囊按钮，桌面端经典主次组合 -->
           <div
-            class="hero-stagger mt-9 flex flex-wrap items-center gap-4"
+            class="hero-stagger mt-5 grid grid-cols-2 gap-2.5 sm:mt-9 sm:flex sm:flex-wrap sm:items-center sm:gap-4"
             style="--stagger-delay: 240ms"
           >
             <a
               href="#catalog"
-              class="btn-primary btn-shine group text-[16px]"
+              class="btn-primary btn-shine group min-h-[44px] px-4 py-2.5 text-[14px] sm:min-h-[48px] sm:px-7 sm:py-3.5 sm:text-[16px]"
               @click="triggerSpark($event)"
             >
-              <span>探索全量号卡</span>
+              <span>探索号卡</span>
               <ArrowRight class="h-4 w-4 transition-transform duration-200 group-hover:translate-x-1" />
             </a>
             <button
               type="button"
-              class="btn-outline-dark btn-shine"
+              class="btn-outline-dark btn-shine min-h-[44px] px-4 py-2.5 text-[14px] sm:min-h-[48px] sm:px-[27px] sm:py-[13px] sm:text-[16px]"
               @click="triggerSpark($event); openAdvisor()"
             >
-              <ThinkingOrb :size="18" tone="cobalt" />
-              <span>30 秒 AI 匹配套餐</span>
+              <ThinkingOrb :size="16" tone="cobalt" />
+              <span class="sm:hidden">AI 选卡</span>
+              <span class="hidden sm:inline">30 秒 AI 匹配套餐</span>
             </button>
           </div>
 
           <!-- 精简等宽核心指标带（纯 1px hairline-dark 分隔） -->
           <div
-            class="hero-stagger mt-12 grid grid-cols-3 gap-4 border-t border-hairline-dark pt-7 sm:max-w-lg sm:gap-8"
+            class="hero-stagger mt-6 grid grid-cols-3 gap-3 border-t border-hairline-dark pt-4 sm:mt-12 sm:max-w-lg sm:gap-8 sm:pt-7"
             style="--stagger-delay: 320ms"
           >
             <div>
-              <div class="hero-num text-[28px] text-white sm:text-[34px]">
+              <div class="hero-num text-[22px] text-white sm:text-[34px]">
                 {{ allPlans.length }}<span class="text-on-dark-mute">{{ backendMode === 'live' ? '' : '+' }}</span>
               </div>
-              <div class="mt-1.5 text-[13px] text-on-dark-mute">
-                {{ backendMode === 'live' ? '服务器实时在售' : '核验在售方案' }}
+              <div class="mt-1 text-[11.5px] text-on-dark-mute sm:mt-1.5 sm:text-[13px]">
+                {{ backendMode === 'live' ? '服务器在售' : '核验在售方案' }}
               </div>
             </div>
             <div>
-              <div class="hero-num text-[28px] text-white sm:text-[34px]">
+              <div class="hero-num text-[22px] text-white sm:text-[34px]">
                 ¥{{ minPricePerGb }}
               </div>
-              <div class="mt-1.5 text-[13px] text-on-dark-mute">最低单 G 折算</div>
+              <div class="mt-1 text-[11.5px] text-on-dark-mute sm:mt-1.5 sm:text-[13px]">最低单 G 折算</div>
             </div>
             <div>
-              <div class="hero-num text-[28px] text-white sm:text-[34px]">
-                0 <span class="text-[20px] font-medium">条</span>
+              <div class="hero-num text-[22px] text-white sm:text-[34px]">
+                0 <span class="text-[15px] font-medium sm:text-[20px]">条</span>
               </div>
-              <div class="mt-1.5 text-[13px] text-on-dark-mute">站内实名留存</div>
+              <div class="mt-1 text-[11.5px] text-on-dark-mute sm:mt-1.5 sm:text-[13px]">站内实名留存</div>
             </div>
           </div>
         </div>
 
-        <!-- 右侧硬件级 Product Mockup 舞台（巡航流光边框 + 半透明雕塑磨砂玻璃） -->
+        <!-- 右侧硬件级 Product Mockup 舞台（手机端紧凑展示，4 档单行切换） -->
         <div class="hero-stagger lg:col-span-5" style="--stagger-delay: 180ms">
-          <div class="ns-frosted-card-dark relative p-5 sm:p-6">
+          <div class="ns-frosted-card-dark relative p-3.5 sm:p-6">
             <BorderBeam color-from="#6d73ff" color-to="#00c495" :duration="6" radius-class="rounded-[20px]" />
             <!-- 实体 1.586:1 金属 SIM 卡模型（切换四档平滑翻换） -->
             <button
@@ -248,13 +249,13 @@ const minPricePerGb = computed(() => {
               </div>
             </div>
 
-            <!-- 底部 4 档实体卡面切换胶囊（等分网格，桌面 4 列完整呈现无裁切，手机 2x2 舒展） -->
-            <div class="mt-4 grid grid-cols-2 gap-2 sm:grid-cols-4">
+            <!-- 底部 4 档实体卡面切换胶囊（手机单行 4 列精炼价格胶囊，桌面 4 列完整档位名） -->
+            <div class="mt-3 grid grid-cols-4 gap-1.5 sm:mt-4 sm:gap-2">
               <button
                 v-for="(plan, idx) in heroShowcasePlans"
                 :key="plan.id"
                 type="button"
-                class="inline-flex min-h-[42px] sm:min-h-[38px] items-center justify-center gap-1 rounded-full px-2.5 py-1.5 text-[13px] font-semibold transition-colors whitespace-nowrap"
+                class="inline-flex min-h-[36px] items-center justify-center gap-1 rounded-full px-1.5 py-1.5 text-[12px] font-semibold transition-colors whitespace-nowrap sm:min-h-[38px] sm:px-2.5 sm:text-[13px]"
                 :class="
                   idx === activeIdx
                     ? 'bg-canvas-light text-canvas-dark'
@@ -262,7 +263,7 @@ const minPricePerGb = computed(() => {
                 "
                 @click="activeIdx = idx"
               >
-                <span>{{ plan.featuredTier }}</span>
+                <span class="hidden sm:inline">{{ plan.featuredTier }}</span>
                 <span class="tabular">¥{{ plan.monthlyPrice }}</span>
               </button>
             </div>

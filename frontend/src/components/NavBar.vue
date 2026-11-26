@@ -6,12 +6,19 @@
  * - 按要求移除「流光开 / 极简」切换按钮，全站默认恒开流光视觉
  */
 import { computed, onMounted, onUnmounted, ref } from 'vue';
-import { ArrowRight, MapPin, Menu, Scale, Sparkles, X } from 'lucide-vue-next';
+import { ArrowRight, MapPin, Menu, MessageSquarePlus, Scale, Sparkles, X } from 'lucide-vue-next';
 import { useStorefront } from '@/composables/useStorefront';
 import ThinkingOrb from './fx/ThinkingOrb.vue';
 
-const { compareIds, selectedProvince, openAdvisor, backendMode, allPlans, publicCategories } =
-  useStorefront();
+const {
+  compareIds,
+  selectedProvince,
+  openAdvisor,
+  openContact,
+  backendMode,
+  allPlans,
+  publicCategories,
+} = useStorefront();
 
 const peekingHeadline = computed(() => {
   if (backendMode.value === 'live') {
@@ -74,32 +81,43 @@ function handleMobileNav(href: string) {
 
 <template>
   <header
-    class="pointer-events-none fixed inset-x-0 top-0 z-40 px-3 pt-3 sm:px-6 sm:pt-4"
+    class="pointer-events-none fixed inset-x-0 top-0 z-40 px-2.5 pt-2 sm:px-6 sm:pt-4"
     @pointerenter="isNavHovered = true"
     @pointerleave="isNavHovered = false"
   >
     <div class="mx-auto flex max-w-container flex-col items-center">
-      <!-- ===== 主悬浮胶囊导航栏（Pill Nav） ===== -->
+      <!-- ===== 主悬浮胶囊导航栏（移动端 48px 超精简 App 顶栏，桌面端 60px 完整胶囊） ===== -->
       <div
-        class="pointer-events-auto relative z-20 flex h-14 w-full max-w-[1140px] items-center justify-between gap-3 overflow-hidden rounded-full border border-white/15 bg-[#0b0d12]/90 px-3 text-on-dark ring-1 ring-black/20 backdrop-blur-xl transition-colors duration-200 sm:h-[60px] sm:px-4"
+        class="pointer-events-auto relative z-20 flex h-12 w-full max-w-[1140px] items-center justify-between gap-2 overflow-hidden rounded-full border border-white/15 bg-[#0b0d12]/92 px-2.5 text-on-dark ring-1 ring-black/20 backdrop-blur-xl transition-colors duration-200 md:h-[60px] md:gap-3 md:px-4"
       >
-        <!-- 左侧品牌字标 -->
+        <!-- 左侧品牌字标 + 实时服务器状态微点 -->
         <a
           href="#top"
-          class="flex flex-shrink-0 items-center gap-2.5 whitespace-nowrap pl-1 focus-visible:outline-offset-4"
+          class="flex flex-shrink-0 items-center gap-2 whitespace-nowrap pl-0.5 focus-visible:outline-offset-4 md:gap-2.5 md:pl-1"
         >
           <span
-            class="flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-full bg-primary text-white"
+            class="flex h-7 w-7 flex-shrink-0 items-center justify-center rounded-full bg-primary text-white md:h-8 md:w-8"
             aria-hidden="true"
           >
-            <svg class="h-4 w-4" viewBox="0 0 20 20" fill="none">
+            <svg class="h-3.5 w-3.5 md:h-4 md:w-4" viewBox="0 0 20 20" fill="none">
               <rect x="2.5" y="3.5" width="15" height="13" rx="2.5" stroke="currentColor" stroke-width="1.8" />
               <path d="M7.5 3.5V16.5M12.5 3.5V16.5M2.5 10H17.5" stroke="currentColor" stroke-width="1.4" />
             </svg>
           </span>
-          <span class="font-display text-[18px] font-semibold tracking-[-0.025em] text-white">
+          <span class="font-display text-[16px] font-semibold tracking-[-0.025em] text-white md:text-[18px]">
             NovaSIM
           </span>
+          <span
+            class="h-1.5 w-1.5 rounded-full md:hidden"
+            :class="
+              backendMode === 'live'
+                ? 'bg-accent-teal'
+                : backendMode === 'connected_empty'
+                  ? 'bg-amber-400'
+                  : 'bg-white/40'
+            "
+            :title="peekingHeadline"
+          />
         </a>
 
         <!-- 中部桌面导航链接（单行胶囊微高亮） -->
@@ -114,9 +132,34 @@ function handleMobileNav(href: string) {
           </a>
         </nav>
 
-        <!-- 右侧操作区（已移除流光切换开关，精简聚焦选卡动作） -->
-        <div class="flex flex-shrink-0 items-center gap-2">
-          <!-- 已选收货省份速览 -->
+        <!-- 右侧操作区 -->
+        <div class="flex flex-shrink-0 items-center gap-1.5 md:gap-2">
+          <!-- 移动端快捷收货省份胶囊（点击直达省份筛选） -->
+          <a
+            href="#catalog"
+            class="inline-flex h-8 items-center gap-1 whitespace-nowrap rounded-full border border-white/15 bg-white/10 px-2.5 text-[11.5px] font-semibold text-white/90 active:scale-95 md:hidden"
+          >
+            <MapPin class="h-3 w-3 flex-shrink-0 text-primary-bright" />
+            <span>
+              {{
+                selectedProvince
+                  ? selectedProvince.replace(/(省|市|壮族自治区|维吾尔自治区|回族自治区|自治区)$/, '')
+                  : '选省份'
+              }}
+            </span>
+          </a>
+
+          <!-- 移动端快捷提问按钮（取代右下角遮挡内容的悬浮提问胶囊） -->
+          <button
+            type="button"
+            class="inline-flex h-8 w-8 items-center justify-center rounded-full border border-white/15 bg-white/10 text-white active:scale-95 md:hidden"
+            aria-label="提交疑问或联系顾问"
+            @click="openContact"
+          >
+            <MessageSquarePlus class="h-3.5 w-3.5 text-primary-bright" />
+          </button>
+
+          <!-- 桌面端已选收货省份速览 -->
           <a
             v-if="selectedProvince"
             href="#catalog"
@@ -126,10 +169,10 @@ function handleMobileNav(href: string) {
             <span>{{ selectedProvince.replace(/(省|市|壮族自治区|维吾尔自治区|回族自治区|自治区)$/, '') }}</span>
           </a>
 
-          <!-- 对比计数跳转 -->
+          <!-- 桌面端对比计数跳转 -->
           <a
             href="#compare"
-            class="hidden h-9 items-center gap-1.5 whitespace-nowrap rounded-full border border-white/10 bg-white/5 px-3 text-[13px] font-semibold text-white transition-colors hover:bg-white/15 sm:inline-flex"
+            class="hidden h-9 items-center gap-1.5 whitespace-nowrap rounded-full border border-white/10 bg-white/5 px-3 text-[13px] font-semibold text-white transition-colors hover:bg-white/15 md:inline-flex"
           >
             <Scale class="h-3.5 w-3.5 flex-shrink-0 text-white/70" />
             <span>对比</span>
@@ -141,7 +184,7 @@ function handleMobileNav(href: string) {
             </span>
           </a>
 
-          <!-- AI 智能选卡入口（内嵌 ThinkingOrb 旋转点阵星轨） -->
+          <!-- 桌面端 AI 智能选卡入口 -->
           <button
             type="button"
             class="hidden h-9 items-center gap-1.5 whitespace-nowrap rounded-full border border-white/15 bg-black/60 px-3 text-[13px] font-semibold text-white transition-colors hover:border-white/30 hover:bg-white/10 md:inline-flex"
@@ -151,18 +194,18 @@ function handleMobileNav(href: string) {
             <span>AI 选卡</span>
           </button>
 
-          <!-- Revolut 标志性纯白主胶囊 -->
+          <!-- 桌面端 Revolut 纯白主胶囊（移动端底部 Tab 已直达选卡，不再挤占顶栏） -->
           <a
             href="#catalog"
-            class="btn-shine inline-flex h-9 items-center justify-center whitespace-nowrap rounded-full bg-canvas-light px-4 text-[13px] font-semibold text-canvas-dark transition-colors hover:bg-[#ececef]"
+            class="btn-shine hidden h-9 items-center justify-center whitespace-nowrap rounded-full bg-canvas-light px-4 text-[13px] font-semibold text-canvas-dark transition-colors hover:bg-[#ececef] md:inline-flex"
           >
             立即选卡
           </a>
 
-          <!-- 移动端汉堡菜单按钮 (< 1024px) -->
+          <!-- 移动/平板端汉堡菜单按钮 (< 1024px) -->
           <button
             type="button"
-            class="inline-flex h-9 w-9 items-center justify-center rounded-full border border-white/15 bg-white/10 text-white lg:hidden"
+            class="inline-flex h-8 w-8 items-center justify-center rounded-full border border-white/15 bg-white/10 text-white md:h-9 md:w-9 lg:hidden"
             :aria-expanded="mobileMenuOpen"
             aria-label="打开导航菜单"
             @click="mobileMenuOpen = !mobileMenuOpen"
@@ -180,9 +223,9 @@ function handleMobileNav(href: string) {
         />
       </div>
 
-      <!-- ===== Navigation 9 标志性探头式公告条（Peeking Announcement） ===== -->
+      <!-- ===== 桌面端探头式公告条（移动端隐藏，避免顶部 100px 挤压与截断省略号） ===== -->
       <div
-        class="pointer-events-auto relative z-10 -mt-3 max-w-[92vw] transition-all duration-300 ease-out"
+        class="pointer-events-auto relative z-10 -mt-3 hidden max-w-[92vw] transition-all duration-300 ease-out md:block"
         :class="
           showPeekingBar
             ? 'translate-y-0 opacity-100'

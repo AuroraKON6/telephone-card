@@ -3,7 +3,7 @@
  * 集成原生 <SignalMap /> 点阵世界地图与城市间弧线信号脉冲
  * 插入在纯白「横向对比」与纯白「FAQ」之间，强化 Revolut 黑 ↔ 白 硬切节奏
  */
-import { ref } from 'vue';
+import { computed, ref } from 'vue';
 import { ArrowRight, Globe2, Radio } from 'lucide-vue-next';
 import SignalMap, {
   type SignalArcDef,
@@ -155,6 +155,9 @@ const arcs: SignalArcDef[] = [
 const scope = ref<'all' | 'apac'>('all');
 const theme = ref<SignalTheme>('cobalt');
 const selectedCityId = ref<string | null>('shanghai');
+const activeMobileCity = computed(
+  () => cities.find((c) => c.id === selectedCityId.value) ?? cities[1],
+);
 
 const themes: Array<{ id: SignalTheme; label: string; dot: string }> = [
   { id: 'cobalt', label: '钴蓝脉冲', dot: '#6d73ff' },
@@ -173,7 +176,7 @@ const networkStats = [
 <template>
   <section
     id="network"
-    class="w-full bg-canvas-dark py-16 text-on-dark sm:py-section lg:py-band"
+    class="w-full bg-canvas-dark py-12 text-on-dark sm:py-section lg:py-band"
   >
     <div class="mx-auto max-w-container px-4 sm:px-6">
       <!-- 章节头与链路/配色控制台 -->
@@ -236,9 +239,9 @@ const networkStats = [
       <!-- 点阵世界地图大舞台（统一半透明磨砂暗色卡片边框） -->
       <div
         v-reveal="90"
-        class="ns-frosted-card-dark mt-10 overflow-hidden"
+        class="ns-frosted-card-dark mt-6 overflow-hidden sm:mt-10"
       >
-        <div class="h-[340px] w-full sm:h-[440px] lg:h-[520px]">
+        <div class="h-[220px] w-full sm:h-[440px] lg:h-[520px]">
           <SignalMap
             :cities="cities"
             :arcs="arcs"
@@ -247,6 +250,31 @@ const networkStats = [
             :selected-city-id="selectedCityId"
             @select-city="selectedCityId = $event"
           />
+        </div>
+
+        <!-- 手机端专属紧凑城市状态条（置于地图下方，绝不遮挡点阵地图主体） -->
+        <div
+          v-if="activeMobileCity"
+          class="border-t border-hairline-dark bg-black/65 px-4 py-3 sm:hidden"
+        >
+          <div class="flex items-center justify-between gap-2">
+            <div class="flex items-center gap-1.5">
+              <span class="signal-dot h-2 w-2 rounded-full bg-accent-teal" />
+              <span class="font-display text-[14.5px] font-semibold text-white">
+                {{ activeMobileCity.name }}
+              </span>
+              <span class="text-[11px] text-on-dark-mute">{{ activeMobileCity.en }}</span>
+            </div>
+            <span class="rounded-full bg-surface-elevated px-2 py-0.5 text-[11px] font-semibold text-accent-teal tabular">
+              {{ activeMobileCity.latencyMs }}ms
+            </span>
+          </div>
+          <div class="mt-1 text-[11.5px] font-semibold text-white/85">
+            {{ activeMobileCity.band }}
+          </div>
+          <p class="mt-0.5 text-[11.5px] leading-[1.45] text-on-dark-mute">
+            {{ activeMobileCity.note }}
+          </p>
         </div>
 
         <!-- 底部城市快捷切换轨道（点击即锁定高亮该节点与全部关联信号飞弧） -->
@@ -282,8 +310,8 @@ const networkStats = [
         </div>
       </div>
 
-      <!-- 4 列硬核网络指标带（Tiagoadag 霓虹外框内缩 + 半透明暗色磨砂玻璃） -->
-      <div class="mt-6 grid grid-cols-2 gap-4 lg:grid-cols-4">
+      <!-- 4 列硬核网络指标带（手机 2×2 紧致卡片） -->
+      <div class="mt-4 grid grid-cols-2 gap-3 sm:mt-6 sm:gap-4 lg:grid-cols-4">
         <div
           v-for="(stat, idx) in networkStats"
           :key="stat.label"
@@ -291,11 +319,11 @@ const networkStats = [
           class="flex"
         >
           <div class="ns-tiago-shell w-full">
-            <div class="ns-tiago-inner ns-frosted-card-dark p-6">
-              <div class="hero-num text-[30px] text-white sm:text-[34px]">
+            <div class="ns-tiago-inner ns-frosted-card-dark p-4 sm:p-6">
+              <div class="hero-num text-[24px] text-white sm:text-[34px]">
                 {{ stat.value }}
               </div>
-              <div class="mt-2.5 text-[14px] text-on-dark-mute">
+              <div class="mt-1.5 text-[12px] text-on-dark-mute sm:mt-2.5 sm:text-[14px]">
                 {{ stat.label }}
               </div>
             </div>

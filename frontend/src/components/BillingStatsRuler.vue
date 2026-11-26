@@ -283,48 +283,48 @@ function onRulerKeydown(e: KeyboardEvent) {
         </div>
       </div>
 
-      <!-- ===== Stats 21 核心区 ①：3 组随标尺实时滚变的大号增长指标 ===== -->
+      <!-- ===== Stats 21 核心区 ①：3 组随标尺实时滚变的大号增长指标（手机端同步 3 列横向并排，单屏即可边拖标尺边看 3 组数字滚变） ===== -->
       <div
-        class="mt-6 grid grid-cols-1 divide-y divide-white/10 rounded-xl border border-white/10 bg-canvas-dark/90 sm:grid-cols-3 sm:divide-x sm:divide-y-0"
+        class="mt-4 grid grid-cols-3 divide-x divide-white/10 rounded-xl border border-white/10 bg-canvas-dark/90 sm:mt-6"
       >
         <!-- 指标 1：累计实付账单 -->
-        <div class="px-4 py-4 sm:px-5 sm:py-4">
-          <div class="ns-data-mono flex items-center justify-between text-[11px] tracking-[0.12em] text-white/55">
-            <span>累计实付账单</span>
-            <span>M01–M{{ pad2(activeMonth) }}</span>
+        <div class="px-2.5 py-3 sm:px-5 sm:py-4">
+          <div class="ns-data-mono flex items-center justify-between text-[10px] tracking-[0.04em] text-white/55 sm:text-[11px] sm:tracking-[0.12em]">
+            <span class="truncate">累计实付</span>
+            <span class="hidden sm:inline">M01–M{{ pad2(activeMonth) }}</span>
           </div>
-          <div class="mt-2 flex items-baseline gap-1">
-            <span class="font-display text-[17px] font-medium text-white/65">¥</span>
+          <div class="mt-1.5 flex items-baseline gap-0.5 sm:mt-2 sm:gap-1">
+            <span class="font-display text-[13px] font-medium text-white/65 sm:text-[17px]">¥</span>
             <span
-              class="hero-num text-[32px] text-white transition-colors sm:text-[36px]"
+              class="hero-num text-[20px] text-white transition-colors sm:text-[36px]"
               :class="isDragging ? 'text-[#c7cbff]' : 'text-white'"
             >
               <AnimatedNumber :value="scrubbedStats.cumulativeCost" :duration="numberAnimDuration" />
             </span>
           </div>
-          <div class="ns-data-mono mt-1.5 truncate text-[11.5px]">
+          <div class="ns-data-mono mt-1 truncate text-[10px] sm:mt-1.5 sm:text-[11.5px]">
             <span v-if="scrubbedStats.savedVsOriginal > 0" class="text-accent-teal">
-              较原价已省 ¥{{ scrubbedStats.savedVsOriginal }}
+              省 ¥{{ scrubbedStats.savedVsOriginal }}
             </span>
             <span v-else class="text-white/55">
-              当月实付 ¥{{ scrubbedStats.currentMonthPrice }}
+              当月 ¥{{ scrubbedStats.currentMonthPrice }}
             </span>
           </div>
         </div>
 
         <!-- 指标 2：累计通用流量 -->
-        <div class="px-4 py-4 sm:px-5 sm:py-4">
-          <div class="ns-data-mono flex items-center justify-between text-[11px] tracking-[0.12em] text-white/55">
-            <span>累计通用流量</span>
-            <span>{{ plan.generalDataGb < 0 ? '不限量' : `${plan.generalDataGb}G/月` }}</span>
+        <div class="px-2.5 py-3 sm:px-5 sm:py-4">
+          <div class="ns-data-mono flex items-center justify-between text-[10px] tracking-[0.04em] text-white/55 sm:text-[11px] sm:tracking-[0.12em]">
+            <span class="truncate">累计流量</span>
+            <span class="hidden sm:inline">{{ plan.generalDataGb < 0 ? '不限量' : `${plan.generalDataGb}G/月` }}</span>
           </div>
-          <div class="mt-2 flex items-baseline gap-1">
+          <div class="mt-1.5 flex items-baseline gap-0.5 sm:mt-2 sm:gap-1">
             <template v-if="plan.generalDataGb < 0">
-              <span class="hero-num text-[32px] text-white sm:text-[36px]">不限量</span>
+              <span class="hero-num text-[18px] text-white sm:text-[36px]">不限量</span>
             </template>
             <template v-else>
               <span
-                class="hero-num text-[32px] text-white transition-colors sm:text-[36px]"
+                class="hero-num text-[20px] text-white transition-colors sm:text-[36px]"
                 :class="isDragging ? 'text-[#8df5d8]' : 'text-white'"
               >
                 <AnimatedNumber
@@ -339,43 +339,43 @@ function onRulerKeydown(e: KeyboardEvent) {
                   :duration="numberAnimDuration"
                 />
               </span>
-              <span class="ns-data-mono text-[13px] font-medium text-white/60">
+              <span class="ns-data-mono text-[10.5px] font-medium text-white/60 sm:text-[13px]">
                 {{ scrubbedStats.useTbUnit ? 'TB' : 'GB' }}
               </span>
             </template>
           </div>
-          <div class="ns-data-mono mt-1.5 truncate text-[11.5px] text-white/55">
+          <div class="ns-data-mono mt-1 truncate text-[10px] text-white/55 sm:mt-1.5 sm:text-[11.5px]">
             <template v-if="plan.voiceMinutes > 0">
-              含累计 {{ scrubbedStats.cumulativeVoice }} 分钟通话
+              {{ scrubbedStats.cumulativeVoice }}分通话
             </template>
             <template v-else-if="plan.directionalDataGb > 0">
-              另含 {{ plan.directionalDataGb * activeMonth }}G 定向流量
+              +{{ plan.directionalDataGb * activeMonth }}G定向
             </template>
             <template v-else>
-              全通用不限速 · 零定向套路
+              全通用不限速
             </template>
           </div>
         </div>
 
         <!-- 指标 3：实时折合月均 -->
-        <div class="px-4 py-4 sm:px-5 sm:py-4">
-          <div class="ns-data-mono flex items-center justify-between text-[11px] tracking-[0.12em] text-white/55">
-            <span>实时折合月均</span>
-            <span>{{ activeBar.phaseLabel }}</span>
+        <div class="px-2.5 py-3 sm:px-5 sm:py-4">
+          <div class="ns-data-mono flex items-center justify-between text-[10px] tracking-[0.04em] text-white/55 sm:text-[11px] sm:tracking-[0.12em]">
+            <span class="truncate">折合月均</span>
+            <span class="hidden sm:inline">{{ activeBar.phaseLabel }}</span>
           </div>
-          <div class="mt-2 flex items-baseline gap-1">
-            <span class="font-display text-[17px] font-medium text-white/65">¥</span>
-            <span class="hero-num text-[32px] text-white sm:text-[36px]">
+          <div class="mt-1.5 flex items-baseline gap-0.5 sm:mt-2 sm:gap-1">
+            <span class="font-display text-[13px] font-medium text-white/65 sm:text-[17px]">¥</span>
+            <span class="hero-num text-[20px] text-white sm:text-[36px]">
               <AnimatedNumber
                 :value="scrubbedStats.effectiveMonthly"
                 :decimals="1"
                 :duration="numberAnimDuration"
               />
             </span>
-            <span class="text-[12px] text-white/55">/月</span>
+            <span class="hidden text-[12px] text-white/55 sm:inline">/月</span>
           </div>
-          <div class="ns-data-mono mt-1.5 truncate text-[11.5px] text-white/55">
-            当月 ¥{{ scrubbedStats.currentMonthPrice }} · 约 ¥{{ scrubbedStats.effectivePricePerGb }}/GB
+          <div class="ns-data-mono mt-1 truncate text-[10px] text-white/55 sm:mt-1.5 sm:text-[11.5px]">
+            ¥{{ scrubbedStats.effectivePricePerGb }}/GB
           </div>
         </div>
       </div>

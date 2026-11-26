@@ -20,7 +20,7 @@ const tileIcons = [SearchCheck, FileText, ShieldAlert];
 <template>
   <section
     id="faq"
-    class="relative w-full overflow-hidden border-t border-hairline-light bg-canvas-light py-16 text-ink sm:py-section lg:py-band"
+    class="relative w-full overflow-hidden border-t border-hairline-light bg-canvas-light py-12 text-ink sm:py-section lg:py-band"
   >
     <!-- 蓝噪声点彩慢折渐变背景（StippleGradient，随全局流光开关联动） -->
     <div
@@ -75,22 +75,22 @@ const tileIcons = [SearchCheck, FileText, ShieldAlert];
           </div>
         </div>
 
-        <!-- 右侧 1px hairline-light 丝滑高度展开手风琴列表（雕塑半透明磨砂玻璃衬托点彩渐变） -->
+        <!-- 右侧 1px hairline-light 丝滑高度展开手风琴列表 -->
         <div
           v-reveal="100"
-          class="ns-frosted-card-light px-6 lg:col-span-7"
+          class="ns-frosted-card-light px-4 sm:px-6 lg:col-span-7"
         >
           <div class="divide-y divide-hairline-light">
             <div v-for="item in FAQ_ITEMS" :key="item.id">
               <button
                 type="button"
-                class="flex w-full items-center justify-between gap-4 py-6 text-left"
+                class="flex w-full items-center justify-between gap-3 py-4 text-left sm:gap-4 sm:py-6"
                 :aria-expanded="openFaqId === item.id"
                 @click="toggleFaq(item.id)"
               >
                 <div>
-                  <span class="text-[12px] font-semibold text-primary">{{ item.category }}</span>
-                  <div class="mt-1 font-display text-[19px] font-medium leading-[1.35] text-ink sm:text-[20px]">
+                  <span class="text-[11.5px] font-semibold text-primary sm:text-[12px]">{{ item.category }}</span>
+                  <div class="mt-0.5 font-display text-[16.5px] font-medium leading-[1.35] text-ink sm:mt-1 sm:text-[20px]">
                     {{ item.question }}
                   </div>
                 </div>

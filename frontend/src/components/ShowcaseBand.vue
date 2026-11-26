@@ -56,7 +56,7 @@ const wavePalette = computed(() => {
 <template>
   <section
     id="showcase"
-    class="relative w-full overflow-hidden bg-canvas-dark py-16 text-on-dark sm:py-section lg:py-band"
+    class="relative w-full overflow-hidden bg-canvas-dark py-12 text-on-dark sm:py-section lg:py-band"
   >
     <!-- 3D 翻涌点阵波浪背景（DottedWaves，随选卡平滑换色，视口外自动休眠） -->
     <div
@@ -96,31 +96,32 @@ const wavePalette = computed(() => {
           :radius="145"
           class="type-display-xl mt-3 text-on-dark"
         />
-        <p class="mt-4 text-[17px] leading-[1.6] tracking-[0.005em] text-on-dark-mute sm:text-[18px]">
+        <p class="mt-3 text-[13.5px] leading-[1.56] tracking-[0.005em] text-on-dark-mute sm:mt-4 sm:text-[18px] sm:leading-[1.6]">
           Select any tier below and scrub the 24-month ruler to inspect monthly bills, first-recharge rebates, and post-promo renewal pricing.
         </p>
       </div>
 
-      <!-- 切换胶囊行（移动端自动横向滚动） -->
-      <div v-reveal="80" class="mt-8 flex items-center gap-2.5 overflow-x-auto pb-1 no-scrollbar">
+      <!-- 切换胶囊行（手机端紧凑单行滑动，支持轻触直切） -->
+      <div v-reveal="80" class="no-scrollbar -mx-4 mt-6 flex items-center gap-2 overflow-x-auto px-4 pb-1 sm:mx-0 sm:mt-8 sm:gap-2.5 sm:px-0">
         <button
           v-for="plan in showcaseList"
           :key="plan.id"
           type="button"
+          class="!min-h-[38px] !px-3.5 !py-1.5 !text-[12.5px] sm:!text-[14px]"
           :class="plan.id === currentPlan.id ? 'sub-nav-pill-active' : 'sub-nav-pill'"
           @click="selectedId = plan.id"
         >
-          <span>{{ plan.name }}</span>
+          <span>{{ plan.name.split('·')[0].trim() }}</span>
           <span class="tabular">¥{{ plan.monthlyPrice }}</span>
         </button>
       </div>
 
-      <!-- 双栏硬件与账单透视舞台 -->
-      <div class="mt-8 grid grid-cols-1 items-stretch gap-6 lg:grid-cols-12">
-        <!-- 左侧实体 SIM 金属卡大舞台（巡航流光边框 + 半透明雕塑磨砂玻璃映出背后点阵波浪） -->
+      <!-- 双栏硬件与账单透视舞台（手机端紧凑内边距，卡面与标尺上下利落衔接） -->
+      <div class="mt-5 grid grid-cols-1 items-stretch gap-4 sm:mt-8 sm:gap-6 lg:grid-cols-12">
+        <!-- 左侧实体 SIM 金属卡大舞台 -->
         <div
           v-reveal="120"
-          class="ns-frosted-card-dark relative flex flex-col justify-between p-6 sm:p-8 lg:col-span-5"
+          class="ns-frosted-card-dark relative flex flex-col justify-between p-4 sm:p-8 lg:col-span-5"
         >
           <BorderBeam color-from="#6d73ff" color-to="#00c495" :duration="7" radius-class="rounded-[20px]" />
           <div class="relative z-10">
@@ -182,7 +183,7 @@ const wavePalette = computed(() => {
         <!-- 右侧 Stats 21 风格：3 组大号增长数字 + 24 期月度柱状图 + 可拖拽精密时间标尺 -->
         <div
           v-reveal="180"
-          class="ns-frosted-card-dark flex flex-col justify-between p-6 sm:p-8 lg:col-span-7"
+          class="ns-frosted-card-dark flex flex-col justify-between p-4 sm:p-8 lg:col-span-7"
         >
           <BillingStatsRuler :plan="currentPlan" />
         </div>

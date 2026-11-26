@@ -26,9 +26,16 @@ import { PROVINCES } from '@/data/plans';
 import { useStorefront } from '@/composables/useStorefront';
 import { triggerSpark } from '@/composables/useSpark';
 
-const { selectedProvince, backendMode, submitBackendSupportTicket, showToast } = useStorefront();
+const {
+  selectedProvince,
+  backendMode,
+  isContactOpen: isOpen,
+  openContact: openModal,
+  closeContact,
+  submitBackendSupportTicket,
+  showToast,
+} = useStorefront();
 
-const isOpen = ref(false);
 const submitted = ref(false);
 const isSubmitting = ref(false);
 const ticketCode = ref('');
@@ -96,12 +103,8 @@ watch(isOpen, (val) => {
   }
 });
 
-function openModal() {
-  isOpen.value = true;
-}
-
 function closeModal() {
-  isOpen.value = false;
+  closeContact();
   openMenu.value = null;
 }
 
@@ -212,10 +215,10 @@ onUnmounted(() => {
 </script>
 
 <template>
-  <!-- 桌面端右侧边缘悬浮触发胶囊（黑白背景章节皆高对比可见，零正文遮挡） -->
+  <!-- 桌面端右侧边缘悬浮触发胶囊（移动端已移入顶部导航栏图标，彻底杜绝遮挡按钮） -->
   <button
     type="button"
-    class="contact-side-trigger fixed right-0 top-1/2 z-40 hidden -translate-y-1/2 flex-col items-center gap-2.5 rounded-l-xl border border-r-0 border-white/20 bg-[#0c0e14]/95 px-2.5 py-4 text-white ring-1 ring-black/15 backdrop-blur-md transition-all duration-200 hover:bg-[#151826] hover:pr-3.5 sm:flex"
+    class="contact-side-trigger fixed right-0 top-1/2 z-40 hidden -translate-y-1/2 flex-col items-center gap-2.5 rounded-l-xl border border-r-0 border-white/20 bg-[#0c0e14]/95 px-2.5 py-4 text-white ring-1 ring-black/15 backdrop-blur-md transition-all duration-200 hover:bg-[#151826] hover:pr-3.5 md:flex"
     aria-label="提交疑问或联系顾问"
     @click="openModal"
   >
@@ -229,29 +232,18 @@ onUnmounted(() => {
     </span>
   </button>
 
-  <!-- 移动端右下角精巧悬浮按钮（位于回顶按钮与 CompareDock 上方不冲突） -->
-  <button
-    type="button"
-    class="contact-mobile-trigger fixed bottom-40 right-4 z-40 inline-flex h-12 items-center gap-2 rounded-full border border-white/20 bg-[#0c0e14]/95 px-4 text-[13px] font-semibold text-white ring-1 ring-black/15 backdrop-blur-md sm:hidden"
-    aria-label="提交疑问或联系顾问"
-    @click="openModal"
-  >
-    <MessageSquarePlus class="h-4 w-4 text-primary-bright" />
-    <span>提问</span>
-  </button>
-
   <!-- Contact 10 风格深黑企业级联系与疑问提交弹窗 -->
   <Teleport to="body">
     <Transition name="modal-fade">
       <div
         v-if="isOpen"
-        class="fixed inset-0 z-50 flex items-center justify-center bg-black/80 p-3 backdrop-blur-sm sm:p-5"
+        class="fixed inset-0 z-50 flex items-end justify-center bg-black/80 p-0 backdrop-blur-sm sm:items-center sm:p-5"
         role="dialog"
         aria-modal="true"
         aria-label="联系顾问与提交选卡疑问"
         @click.self="closeModal"
       >
-        <div class="modal-panel relative flex max-h-[92dvh] w-full max-w-5xl flex-col overflow-hidden rounded-2xl border border-white/15 bg-[#08090d] text-white">
+        <div class="modal-panel relative flex max-h-[92dvh] w-full max-w-5xl flex-col overflow-hidden rounded-t-2xl border border-white/15 bg-[#08090d] text-white sm:rounded-2xl">
           <!-- 右上角关闭按钮 -->
           <button
             type="button"

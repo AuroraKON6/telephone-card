@@ -53,7 +53,7 @@ onUnmounted(() => {
   >
     <div
       v-if="isVisible"
-      class="fixed bottom-24 right-4 z-40 sm:bottom-6 sm:right-6"
+      class="fixed bottom-6 right-6 z-40 hidden md:block"
     >
       <button
         type="button"

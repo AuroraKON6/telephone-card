@@ -453,7 +453,7 @@ const pillars = [
 <template>
   <section
     id="compare"
-    class="w-full bg-canvas-light py-16 text-ink sm:py-section lg:py-band"
+    class="w-full bg-canvas-light py-12 text-ink sm:py-section lg:py-band"
   >
     <div class="mx-auto max-w-container px-4 sm:px-6">
       <!-- 顶部标题与操作（保留 VaporType 水汽微粒动态大标题） -->
@@ -778,87 +778,142 @@ const pillars = [
           </div>
         </div>
 
-        <!-- 移动端竖排视图（< 768px 自动堆叠两张精比卡，杜绝横向溢出） -->
-        <div class="space-y-8 md:hidden">
-          <article
-            v-for="(plan, slotIdx) in activePair"
-            :key="`mobile-${slotIdx}-${plan.id}`"
-            class="ns-frosted-card-light overflow-hidden"
-          >
-            <div class="bg-surface-soft p-5">
-              <div class="mb-4 flex items-center justify-between gap-2">
-                <span class="font-display text-[12px] font-semibold tracking-[0.14em] text-mute tabular">
-                  OPTION 0{{ slotIdx + 1 }} · {{ plan.carrier }}
-                </span>
-                <button
-                  type="button"
-                  class="inline-flex h-8 w-8 items-center justify-center rounded-full border border-hairline-light bg-canvas-light text-stone"
-                  aria-label="从对比中移出"
-                  @click="toggleCompare(plan.id)"
-                >
-                  <X class="h-3.5 w-3.5" />
-                </button>
-              </div>
-              <SimCardVisual
-                :material="plan.material"
-                :name="plan.name"
-                :carrier="plan.carrier"
-                :monthly-price="plan.monthlyPrice"
-                :general-data-gb="plan.generalDataGb"
-                :voice-minutes="plan.voiceMinutes"
-                :sku-code="plan.skuCode"
-                compact
-              />
-            </div>
-
-            <div class="p-5">
-              <div class="flex items-baseline justify-between gap-2 pb-4">
-                <h3 class="font-display text-[20px] font-medium text-ink">
-                  {{ plan.name }}
-                </h3>
-                <span class="font-display text-[22px] font-medium text-ink tabular">
-                  ¥{{ plan.monthlyPrice }}<span class="text-[12px] text-mute">/月</span>
-                </span>
-              </div>
-
-              <div class="divide-y divide-hairline-light border-y border-hairline-light">
-                <div
-                  v-for="row in specRows"
-                  :key="`m-${slotIdx}-${row.key}`"
-                  class="flex items-start justify-between gap-3 py-3 text-[13px]"
-                >
-                  <span class="text-mute">{{ row.label }}</span>
-                  <div class="text-right tabular">
-                    <span class="font-semibold text-ink">{{ row.cells[slotIdx].value }}</span>
+        <!-- 移动端专属真正「双列并排同屏精比」视图（< 768px 告别上下翻滚盲比，一屏横看胜负） -->
+        <div class="md:hidden">
+          <!-- 顶部双列卡头 + 一键换卡器 -->
+          <div class="grid grid-cols-2 gap-2.5">
+            <div
+              v-for="(plan, slotIdx) in activePair"
+              :key="`m-head-${slotIdx}-${plan.id}`"
+              class="ns-frosted-card-light relative flex flex-col justify-between p-3.5"
+            >
+              <div>
+                <div class="flex items-center justify-between gap-1">
+                  <span class="inline-flex items-center gap-1 text-[11px] font-semibold text-charcoal">
                     <span
-                      v-if="row.cells[slotIdx].badge"
-                      class="ml-1.5 inline-block rounded-full bg-accent-light-green/15 px-2 py-0.5 text-[10px] font-semibold text-accent-green-text"
+                      class="h-2 w-2 rounded-full"
+                      :style="{ backgroundColor: CARRIER_META[plan.carrier].dotColor }"
+                    />
+                    <span>{{ CARRIER_META[plan.carrier].short }}</span>
+                  </span>
+                  <div class="relative" data-compare-picker>
+                    <button
+                      type="button"
+                      class="inline-flex h-6 items-center gap-0.5 rounded-full border border-hairline-light bg-canvas-light px-2 text-[10.5px] font-semibold text-charcoal"
+                      @click.stop="openPickerSlot = openPickerSlot === slotIdx ? null : (slotIdx as 0 | 1)"
                     >
-                      {{ row.cells[slotIdx].badge }}
-                    </span>
+                      <span>换卡</span>
+                      <ChevronDown class="h-3 w-3" />
+                    </button>
+
+                    <div
+                      v-if="openPickerSlot === slotIdx"
+                      class="absolute top-8 z-30 w-56 overflow-hidden rounded-lg border border-hairline-light bg-canvas-light py-1 shadow-lg"
+                      :class="slotIdx === 0 ? 'left-0' : 'right-0'"
+                    >
+                      <div class="max-h-60 overflow-y-auto py-1">
+                        <button
+                          v-for="cand in allPlans"
+                          :key="`mp-${slotIdx}-${cand.id}`"
+                          type="button"
+                          class="flex w-full items-center justify-between gap-1.5 px-3 py-2 text-left text-[12px] hover:bg-surface-soft"
+                          :class="cand.id === plan.id ? 'bg-primary/5 font-semibold text-primary' : 'text-ink'"
+                          @click="selectPlanForSlot(slotIdx as 0 | 1, cand.id)"
+                        >
+                          <span class="truncate">{{ cand.name.split('·')[0].trim() }}</span>
+                          <span class="flex-shrink-0 text-[11px] text-mute tabular">¥{{ cand.monthlyPrice }}</span>
+                        </button>
+                      </div>
+                    </div>
                   </div>
                 </div>
-              </div>
 
-              <div class="mt-5 flex gap-2.5">
                 <button
                   type="button"
-                  class="btn-dark flex-1 text-[14px]"
-                  @click="openApply(plan.id)"
-                >
-                  <span>前往官方办理</span>
-                  <ArrowUpRight class="h-4 w-4" />
-                </button>
-                <button
-                  type="button"
-                  class="btn-outline-light px-4 text-[14px]"
+                  class="mt-2 block text-left font-display text-[14.5px] font-semibold leading-snug text-ink"
                   @click="openDetail(plan.id)"
                 >
-                  账单
+                  {{ plan.name.split('·')[0].trim() }}
                 </button>
               </div>
+
+              <div class="mt-2.5 flex items-baseline justify-between border-t border-hairline-light pt-2 tabular">
+                <span class="hero-num text-[22px] text-ink">
+                  ¥{{ plan.monthlyPrice }}<span class="text-[11px] font-normal text-mute">/月</span>
+                </span>
+                <span class="text-[10.5px] text-mute">{{ plan.generalDataGb < 0 ? '不限量' : `${plan.generalDataGb}G` }}</span>
+              </div>
             </div>
-          </article>
+          </div>
+
+          <!-- 逐项左右并排对照矩阵（中间指标徽标 + 左右两格直比） -->
+          <div class="ns-frosted-card-light mt-3 overflow-hidden divide-y divide-hairline-light">
+            <div
+              v-for="row in specRows"
+              :key="`m-row-${row.key}`"
+              class="px-3 py-2.5"
+            >
+              <div class="mb-1.5 flex items-center justify-center gap-1 text-[11px] font-semibold text-mute">
+                <component :is="row.icon" class="h-3 w-3 text-stone" />
+                <span>{{ row.label }}</span>
+              </div>
+              <div class="grid grid-cols-2 divide-x divide-hairline-light text-center tabular">
+                <div
+                  v-for="(cell, cIdx) in row.cells"
+                  :key="`m-cell-${row.key}-${cIdx}`"
+                  class="px-2"
+                >
+                  <div
+                    class="text-[13.5px] font-semibold leading-snug"
+                    :class="cell.badgeTone === 'red' ? 'text-accent-deep-red' : 'text-ink'"
+                  >
+                    {{ cell.value }}
+                  </div>
+                  <div v-if="cell.sub" class="mt-0.5 truncate text-[10.5px] text-mute">
+                    {{ cell.sub }}
+                  </div>
+                  <span
+                    v-if="cell.badge"
+                    class="mt-1 inline-block rounded-full px-2 py-0.5 text-[10px] font-semibold"
+                    :class="
+                      cell.badgeTone === 'cobalt'
+                        ? 'bg-primary/10 text-primary'
+                        : cell.badgeTone === 'red'
+                          ? 'bg-accent-danger/10 text-accent-deep-red'
+                          : 'bg-accent-light-green/15 text-accent-green-text'
+                    "
+                  >
+                    {{ cell.badge }}
+                  </span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- 底部左右并排直达办理按钮 -->
+          <div class="mt-3 grid grid-cols-2 gap-2.5">
+            <div
+              v-for="(plan, slotIdx) in activePair"
+              :key="`m-cta-${slotIdx}-${plan.id}`"
+              class="flex flex-col gap-1.5"
+            >
+              <button
+                type="button"
+                class="btn-dark min-h-[42px] w-full px-3 py-2 text-[13px]"
+                @click="openApply(plan.id)"
+              >
+                <span>去办理</span>
+                <ArrowUpRight class="h-3.5 w-3.5" />
+              </button>
+              <button
+                type="button"
+                class="btn-outline-light min-h-[38px] w-full px-3 py-1.5 text-[12px]"
+                @click="openDetail(plan.id)"
+              >
+                看完整账单
+              </button>
+            </div>
+          </div>
         </div>
 
         <!-- 核心差异一句话结论条 -->
@@ -896,10 +951,10 @@ const pillars = [
         </div>
       </div>
 
-      <!-- Revolut 规范 3-Up 白底信任保障卡组（ASCII Ripple 字符水波涟漪背景 + 纯白磨砂卡片，错峰浮现） -->
+      <!-- Revolut 规范 3-Up 白底信任保障卡组（手机端横向滑卡节省 700px 竖向空间，桌面 3 列平铺） -->
       <div
         v-reveal
-        class="relative mt-20 overflow-hidden rounded-xl border border-hairline-light bg-surface-soft p-6 sm:p-10"
+        class="relative mt-12 overflow-hidden rounded-xl border border-hairline-light bg-surface-soft p-5 sm:mt-20 sm:p-10"
       >
         <!-- 交互式 ASCII 字符水波涟漪底层（鼠标滑过/点击即泛起水波，联动全局流光开关） -->
         <div class="pointer-events-none absolute inset-0 z-0" aria-hidden="true">
@@ -927,15 +982,15 @@ const pillars = [
           </h3>
         </div>
 
-        <div class="relative z-10 mt-8 grid grid-cols-1 gap-5 md:grid-cols-3">
+        <div class="no-scrollbar relative z-10 -mx-5 mt-6 flex snap-x snap-mandatory gap-3.5 overflow-x-auto px-5 pb-1 md:mx-0 md:mt-8 md:grid md:grid-cols-3 md:gap-5 md:overflow-visible md:px-0 md:pb-0">
           <div
             v-for="(item, idx) in pillars"
             :key="item.title"
             v-reveal="idx * 80"
-            class="flex"
+            class="flex w-[78vw] max-w-[290px] flex-shrink-0 snap-center md:w-auto md:max-w-none md:flex-shrink"
           >
             <div class="ns-tiago-shell w-full">
-              <article class="ns-tiago-inner ns-frosted-card-light flex flex-col justify-between p-8">
+              <article class="ns-tiago-inner ns-frosted-card-light flex flex-col justify-between p-5 md:p-8">
                 <div>
                   <div class="flex items-center justify-between">
                     <span class="flex h-11 w-11 items-center justify-center rounded-md bg-surface-soft text-ink">

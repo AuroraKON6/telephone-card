@@ -42,8 +42,8 @@ const { openAdvisor, openGuide, triggerSlowNetworkCheck } = useStorefront();
       </div>
     </div>
 
-    <!-- 多列快捷导航与合规声明 -->
-    <div class="mx-auto max-w-container px-4 py-16 sm:px-6 sm:py-20">
+    <!-- 多列快捷导航与合规声明（手机端底部预留 pb-28 安全区，彻底避免底部 Tab 栏遮挡版权声明） -->
+    <div class="mx-auto max-w-container px-4 pb-28 pt-12 sm:px-6 sm:py-20 md:pb-20">
       <div class="grid grid-cols-2 gap-10 md:grid-cols-4">
         <div class="col-span-2 md:col-span-1">
           <div class="flex items-center gap-2.5 text-white">

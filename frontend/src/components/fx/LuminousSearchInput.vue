@@ -157,6 +157,40 @@ function handleInput(e: Event) {
   height: var(--ns-search-h);
 }
 
+@media (max-width: 639px) {
+  .ns-poda {
+    height: 46px;
+  }
+  .ns-poda-input {
+    font-size: 13.5px;
+  }
+  .ns-poda-input--with-filter {
+    padding-left: 42px;
+    padding-right: 48px;
+  }
+  .ns-poda-input--plain {
+    padding-left: 42px;
+    padding-right: 14px;
+  }
+  .ns-poda-search-icon {
+    left: 13px;
+  }
+  .ns-poda-filter-icon {
+    height: 34px;
+    width: 34px;
+    right: 6px;
+  }
+  .ns-poda-filter-border {
+    height: 36px;
+    width: 36px;
+    right: 5px;
+  }
+  .ns-poda-input-mask {
+    width: 28px;
+    right: 44px;
+  }
+}
+
 .ns-poda-white,
 .ns-poda-border,
 .ns-poda-dark-bg,

@@ -20,6 +20,27 @@ import StaggeredText from './fx/StaggeredText.vue';
 const { featuredPlans, isCompared, toggleCompare, openDetail } = useStorefront();
 
 const billingView = ref<'promo' | 'effective24'>('promo');
+const carouselRef = ref<HTMLElement | null>(null);
+const mobileSlideIdx = ref(0);
+
+function onCarouselScroll() {
+  const el = carouselRef.value;
+  if (!el || el.clientWidth <= 0) return;
+  const cardWidth = el.clientWidth * 0.82 + 14;
+  mobileSlideIdx.value = Math.min(
+    featuredPlans.value.length - 1,
+    Math.max(0, Math.round(el.scrollLeft / Math.max(1, cardWidth))),
+  );
+}
+
+function scrollToMobileSlide(idx: number) {
+  const el = carouselRef.value;
+  if (!el) return;
+  const child = el.children[idx] as HTMLElement | undefined;
+  if (child) {
+    child.scrollIntoView({ behavior: 'smooth', inline: 'center', block: 'nearest' });
+  }
+}
 
 /** 鼠标跟随暗色聚光灯坐标更新（借鉴 inspira-ui SpotlightCard） */
 function handleCardMove(e: PointerEvent) {
@@ -47,7 +68,7 @@ function handleCompareClick(e: MouseEvent, id: string) {
 <template>
   <section
     id="featured"
-    class="relative w-full overflow-hidden border-t border-divider-soft bg-canvas-dark py-16 text-on-dark sm:py-section lg:py-band"
+    class="relative w-full overflow-hidden border-t border-divider-soft bg-canvas-dark py-12 text-on-dark sm:py-section lg:py-band"
   >
     <!-- 柔焦竖向光谱光束全出血背景（Blurred Rays，联动全局流光开关） -->
     <div class="pointer-events-none absolute inset-0 z-0" aria-hidden="true">
@@ -86,13 +107,13 @@ function handleCompareClick(e: MouseEvent, id: string) {
             text="选一套契合你节奏的方案"
             class="type-display-xl mt-3 text-on-dark"
           />
-          <p class="mt-4 text-[17px] leading-[1.6] tracking-[0.005em] text-on-dark-mute sm:text-[18px]">
+          <p class="mt-3 text-[13.5px] leading-[1.56] tracking-[0.005em] text-on-dark-mute sm:mt-4 sm:text-[18px] sm:leading-[1.6]">
             From ¥19 everyday essentials to gigabit 5G-A business travel. Toggle the 24-month true average to see every plan's real long-term cost at a glance.
           </p>
         </div>
 
-        <!-- Revolut sub-nav-pill 滑动切换器 -->
-        <div class="relative inline-grid grid-cols-2 self-start rounded-full border border-white/10 bg-[#121418]/85 p-1 backdrop-blur-md md:self-auto">
+        <!-- Revolut sub-nav-pill 滑动切换器（手机全宽双列，桌面紧凑自适应） -->
+        <div class="relative grid w-full grid-cols-2 rounded-full border border-white/10 bg-[#121418]/85 p-1 backdrop-blur-md md:inline-grid md:w-auto">
           <span
             class="pointer-events-none absolute bottom-1 top-1 left-1 w-[calc(50%-4px)] rounded-full bg-canvas-light transition-transform duration-300"
             style="transition-timing-function: cubic-bezier(0.22, 1, 0.36, 1);"
@@ -118,16 +139,20 @@ function handleCompareClick(e: MouseEvent, id: string) {
         </div>
       </div>
 
-      <!-- 4-Up 方案网格（外层 v-reveal 错峰浮现 + 内层 SteveBloX 磨砂缩放倾转特效，彻底解耦 transform 冲突） -->
-      <div class="mt-12 grid grid-cols-1 gap-5 md:grid-cols-2 lg:grid-cols-4">
+      <!-- 手机端横向磁吸滑动卡组（告别 3350px 竖向长龙） / 桌面端 4-Up 网格 -->
+      <div
+        ref="carouselRef"
+        class="no-scrollbar -mx-4 mt-7 flex snap-x snap-mandatory gap-3.5 overflow-x-auto px-4 pb-2 md:mx-0 md:mt-12 md:grid md:grid-cols-2 md:gap-5 md:overflow-visible md:px-0 md:pb-0 lg:grid-cols-4"
+        @scroll.passive="onCarouselScroll"
+      >
         <div
           v-for="(plan, idx) in featuredPlans"
           :key="plan.id"
           v-reveal="idx * 70"
-          class="flex"
+          class="flex w-[82vw] max-w-[318px] flex-shrink-0 snap-center md:w-auto md:max-w-none md:flex-shrink"
         >
           <article
-            class="ns-steveblox-card flex w-full flex-col justify-between p-8"
+            class="ns-steveblox-card flex w-full flex-col justify-between p-5 md:p-8"
             :class="
               plan.isFeaturedHighlight
                 ? 'ns-frosted-card-featured ns-steveblox-card--featured text-white'
@@ -305,6 +330,22 @@ function handleCompareClick(e: MouseEvent, id: string) {
         </article>
         </div>
       </div>
+
+      <!-- 手机端横向轮播分页指示点与滑动提示 -->
+      <div class="mt-4 flex items-center justify-between md:hidden">
+        <span class="text-[11.5px] text-white/50">← 左右滑动切换 4 档主力卡 →</span>
+        <div class="flex items-center gap-1.5">
+          <button
+            v-for="(plan, idx) in featuredPlans"
+            :key="`dot-${plan.id}`"
+            type="button"
+            class="h-1.5 rounded-full transition-all duration-200"
+            :class="idx === mobileSlideIdx ? 'w-5 bg-white' : 'w-1.5 bg-white/30'"
+            :aria-label="`切换到第 ${idx + 1} 张方案`"
+            @click="scrollToMobileSlide(idx)"
+          />
+        </div>
+      </div>
     </div>
   </section>
 </template>
@@ -326,25 +367,27 @@ function handleCompareClick(e: MouseEvent, id: string) {
   z-index: 1;
 }
 
-.ns-steveblox-card:hover {
-  border: 1px solid #ffffff;
-  transform: scale(1.05);
-  z-index: 20;
-  box-shadow:
-    inset 0px 56px 40px rgba(0, 0, 0, 0.36),
-    inset 0px -56px 40px rgba(223, 225, 235, 0.18),
-    14px 20px 56px rgba(0, 0, 0, 0.5);
-}
+@media (hover: hover) and (pointer: fine) {
+  .ns-steveblox-card:hover {
+    border: 1px solid #ffffff;
+    transform: scale(1.05);
+    z-index: 20;
+    box-shadow:
+      inset 0px 56px 40px rgba(0, 0, 0, 0.36),
+      inset 0px -56px 40px rgba(223, 225, 235, 0.18),
+      14px 20px 56px rgba(0, 0, 0, 0.5);
+  }
 
-.ns-steveblox-card--dark:hover {
-  background: rgba(223, 225, 235, 0.14);
-}
+  .ns-steveblox-card--dark:hover {
+    background: rgba(223, 225, 235, 0.14);
+  }
 
-.ns-steveblox-card--featured:hover {
-  background: rgba(84, 91, 240, 0.86);
+  .ns-steveblox-card--featured:hover {
+    background: rgba(84, 91, 240, 0.86);
+  }
 }
 
 .ns-steveblox-card:active {
-  transform: scale(0.95) rotateZ(1.7deg);
+  transform: scale(0.97);
 }
 </style>

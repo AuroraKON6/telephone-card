@@ -387,8 +387,8 @@ function handleGoApply() {
           </div>
         </div>
 
-        <!-- 底部吸底操作栏 -->
-        <div class="flex flex-wrap items-center justify-between gap-3 border-t border-hairline-light bg-canvas-light px-5 py-4 sm:px-8">
+        <!-- 底部吸底操作栏（含手机底部安全区适配） -->
+        <div class="pb-safe flex flex-wrap items-center justify-between gap-2.5 border-t border-hairline-light bg-canvas-light px-4 py-3.5 sm:gap-3 sm:px-8 sm:py-4">
           <div class="flex items-center gap-2">
             <button
               type="button"

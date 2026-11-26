@@ -13,6 +13,7 @@ import NetworkMapBand from '@/components/NetworkMapBand.vue';
 import FaqBand from '@/components/FaqBand.vue';
 import FooterBand from '@/components/FooterBand.vue';
 import CompareDock from '@/components/CompareDock.vue';
+import MobileBottomBar from '@/components/MobileBottomBar.vue';
 import PlanDetailModal from '@/components/PlanDetailModal.vue';
 import ApplyRedirectModal from '@/components/ApplyRedirectModal.vue';
 import SoldOut404Modal from '@/components/SoldOut404Modal.vue';
@@ -62,6 +63,7 @@ onMounted(() => {
 
     <!-- 全局交互浮层 -->
     <CompareDock />
+    <MobileBottomBar />
     <PlanDetailModal />
     <ApplyRedirectModal />
     <SoldOut404Modal />
@@ -87,7 +89,7 @@ onMounted(() => {
         v-if="toastMessage"
         role="status"
         aria-live="polite"
-        class="fixed left-1/2 top-20 z-[60] -translate-x-1/2 rounded-full border border-hairline-dark bg-canvas-dark px-5 py-2.5 text-[14px] font-semibold text-white"
+        class="fixed left-1/2 top-16 z-[60] max-w-[90vw] -translate-x-1/2 rounded-full border border-hairline-dark bg-canvas-dark/95 px-4 py-2 text-center text-[13px] font-semibold text-white backdrop-blur-md sm:top-20 sm:px-5 sm:py-2.5 sm:text-[14px]"
       >
         {{ toastMessage }}
       </div>
