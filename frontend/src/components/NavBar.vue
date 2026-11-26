@@ -88,7 +88,7 @@ function handleMobileNav(href: string) {
     <div class="mx-auto flex max-w-container flex-col items-center">
       <!-- ===== 主悬浮胶囊导航栏（移动端 48px 超精简 App 顶栏，桌面端 60px 完整胶囊） ===== -->
       <div
-        class="pointer-events-auto relative z-20 flex h-12 w-full max-w-[1140px] items-center justify-between gap-2 overflow-hidden rounded-full border border-white/15 bg-[#0b0d12]/92 px-2.5 text-on-dark ring-1 ring-black/20 backdrop-blur-xl transition-colors duration-200 md:h-[60px] md:gap-3 md:px-4"
+        class="pointer-events-auto relative z-20 flex h-12 w-full max-w-[1140px] items-center justify-between gap-2 overflow-hidden rounded-full border border-white/15 bg-[#0b0d12]/95 px-2.5 text-on-dark ring-1 ring-black/20 backdrop-blur-xl transition-colors duration-200 md:h-[60px] md:gap-3 md:px-4"
       >
         <!-- 左侧品牌字标 + 实时服务器状态微点 -->
         <a
